@@ -13,10 +13,10 @@ import { OrdersModule } from './orders/orders.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
-      port: 8889,
-      username: 'promis',
-      password: 'promistest',
+      host: 'kitchen-holiday.clmseuge6g72.us-east-2.rds.amazonaws.com',
+      port: 3306,
+      username: 'admin',
+      password: 'KitchenHoliday2024',
       database: 'kitchen_holiday',
       // entities: [],
       autoLoadEntities: true,
