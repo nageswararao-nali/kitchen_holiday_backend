@@ -8,9 +8,11 @@ import { HttpService } from '@nestjs/axios';
 import { AppService } from './app.service';
 import { ItemsModule } from './items/items.module';
 import { OrdersModule } from './orders/orders.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({isGlobal: true}),
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'kitchen-holiday.clmseuge6g72.us-east-2.rds.amazonaws.com',

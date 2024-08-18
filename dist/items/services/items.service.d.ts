@@ -3,11 +3,13 @@ import { Repository } from 'typeorm';
 import { SubItemEntity } from '../models/subItem.entity';
 import { ItemMappingEntity } from '../models/itemMapping.entity';
 import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 export declare class ItemsService {
     private itemModel;
     private subItemModel;
     private itemMappingModel;
-    constructor(itemModel: Repository<ItemEntity>, subItemModel: Repository<SubItemEntity>, itemMappingModel: Repository<ItemMappingEntity>);
+    private configService;
+    constructor(itemModel: Repository<ItemEntity>, subItemModel: Repository<SubItemEntity>, itemMappingModel: Repository<ItemMappingEntity>, configService: ConfigService);
     findAll(): Promise<ItemEntity[]>;
     findOne(id: number): Promise<ItemEntity>;
     list(reqBody: any): Promise<any>;

@@ -20,11 +20,13 @@ const typeorm_2 = require("typeorm");
 const subItem_entity_1 = require("../models/subItem.entity");
 const itemMapping_entity_1 = require("../models/itemMapping.entity");
 const aws_sdk_1 = require("aws-sdk");
+const config_1 = require("@nestjs/config");
 let ItemsService = class ItemsService {
-    constructor(itemModel, subItemModel, itemMappingModel) {
+    constructor(itemModel, subItemModel, itemMappingModel, configService) {
         this.itemModel = itemModel;
         this.subItemModel = subItemModel;
         this.itemMappingModel = itemMappingModel;
+        this.configService = configService;
     }
     findAll() {
         return this.itemModel.find();
@@ -78,8 +80,8 @@ let ItemsService = class ItemsService {
     }
     getS3() {
         return new aws_sdk_1.S3({
-            accessKeyId: 'AKIAQFLZDKPIZWSUOJHJ',
-            secretAccessKey: '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'
+            accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
         });
     }
     async getSubItems(reqBody) {
@@ -137,6 +139,7 @@ exports.ItemsService = ItemsService = __decorate([
     __param(2, (0, typeorm_1.InjectRepository)(itemMapping_entity_1.ItemMappingEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
         typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        config_1.ConfigService])
 ], ItemsService);
 //# sourceMappingURL=items.service.js.map

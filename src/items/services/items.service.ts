@@ -8,6 +8,7 @@ import { SubItemEntity } from '../models/subItem.entity';
 import { ItemMappingEntity } from '../models/itemMapping.entity';
 import * as fs  from 'fs';
 import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ItemsService {
@@ -18,6 +19,7 @@ export class ItemsService {
     private subItemModel: Repository<SubItemEntity>,
     @InjectRepository(ItemMappingEntity)
     private itemMappingModel: Repository<ItemMappingEntity>,
+    private configService: ConfigService
   ) {}
 
   findAll(): Promise<ItemEntity[]> {
@@ -81,8 +83,8 @@ export class ItemsService {
 
   getS3() {
     return new S3({
-        accessKeyId: 'AKIAQFLZDKPIZWSUOJHJ',
-        secretAccessKey: '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'
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
     });
   }
 
