@@ -18,6 +18,9 @@ export class SubItemEntity {
   @Column({default: 0})
   quantity: number;
 
+  @Column({default: 0})
+  price: number
+
   @Column({default: true})
   isVeg: boolean
 

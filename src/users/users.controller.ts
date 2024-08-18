@@ -71,14 +71,14 @@ export class UsersController {
     return response
   }
 
-  @Post('addAddress')
-  async addAddress(@Body() reqBody: any) {
+  @Post('addUserAddress')
+  async addUserAddress(@Body() reqBody: any) {
     let response = {
       data: {},
       success: true,
       message: 'User Address added'
     }
-    const userAddressData = await this.usersService.addAddress(reqBody)
+    const userAddressData = await this.usersService.addUserAddress(reqBody)
     if (!userAddressData) {
         response.success = false;
         response.message = "Problem in adding user address";
@@ -88,4 +88,23 @@ export class UsersController {
     
     return response
   }
+
+  @Post('getUserAddresses')
+  async getUserAddresses(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'User list'
+    }
+    const {items, count} = await this.usersService.userAddressesByUserId(reqBody.userId)
+    if(!count) {
+        response.success = false;
+        response.message = "Problem in getting users";
+    } else {
+      response.data = {users: items, count}
+    }
+    
+    return response
+  }
+  
 }

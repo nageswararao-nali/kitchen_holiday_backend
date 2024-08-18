@@ -54,9 +54,10 @@ export class SubscriptionsService {
       name: reqBody.name,
       description: reqBody.description,
       price: reqBody.price,
-      days: reqBody.days
+      days: reqBody.days,
+      isVeg: reqBody.isVeg
     }
-    // return uploadedData.Location
+    console.log(subscription)
     const createdItem = await this.subRepo.save(subscription);
     return createdItem;
   }

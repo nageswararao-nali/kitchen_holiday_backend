@@ -20,7 +20,7 @@ import { OrdersModule } from './orders/orders.module';
       database: 'kitchen_holiday',
       // entities: [],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true
     }), // Change the connection string as per your MongoDB setup
     AuthModule,
     UsersModule,

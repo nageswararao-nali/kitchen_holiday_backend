@@ -9,6 +9,9 @@ export class SubscriptionsEntity {
   @Column()
   name: string;
 
+  @Column()
+  shortName: string;
+
   @Column({nullable: true})
   description: string;
 
@@ -17,6 +20,9 @@ export class SubscriptionsEntity {
 
   @Column({default: 1})
   days: number;
+
+  @Column({default: true})
+  isVeg: boolean;
 
   @CreateDateColumn()
   created_at: Date;

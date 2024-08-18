@@ -99,17 +99,20 @@ export class UsersService {
     return address
   }
 
-  async addAddress(reqBody: any): Promise<any> {
+  async addUserAddress(reqBody: any): Promise<any> {
     let userInput = {
       userId: reqBody.userId,
       fName: reqBody.fName,
       lName: reqBody.lName,
       address: reqBody.address,
       address1: reqBody.address1,
-      city: reqBody.city,
+      country: reqBody.country,
+      state: reqBody.state,
       email: reqBody.email,
       mobile: reqBody.mobile,
       zipcode: reqBody.zipcode,
+      latitude: reqBody.latitude,
+      longitude: reqBody.longitude,
       isDefault: true
     }
     console.log(userInput)

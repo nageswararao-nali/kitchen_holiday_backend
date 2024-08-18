@@ -6,6 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubItemEntity } from '../models/subItem.entity';
 import { ItemMappingEntity } from '../models/itemMapping.entity';
+import * as fs  from 'fs';
+import { S3 } from 'aws-sdk';
 
 @Injectable()
 export class ItemsService {
@@ -40,16 +42,18 @@ export class ItemsService {
   async addItem(file, reqBody: any): Promise<any> {
     let imagePath = "";
     if(file) {
+      console.log("uploading file")
       const { originalname } = file;
-      // const bucketS3 = this.configService.get('CUSTOMER_RECEIPTS_BUCKET_NAME');
-      // const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
-      // imagePath = uploadedData.Location
+      const bucketS3 = 'kitchen-holiday-images';
+      const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
     }
     let item = {
       name: reqBody.name,
       category: reqBody.category,
       description: reqBody.description,
       image: imagePath,
+      isVeg: reqBody.isVeg,
       price: reqBody.price
     }
     
@@ -58,29 +62,29 @@ export class ItemsService {
     return createdItem;
   }
 
-  // async uploadS3(file, bucket, name) {
-  //   const s3 = this.getS3();
-  //   const params = {
-  //       Bucket: bucket,
-  //       Key: String(name),
-  //       Body: file,
-  //   };
-  //   return new Promise((resolve, reject) => {
-  //       s3.upload(params, (err, data) => {
-  //       if (err) {
-  //           reject(err.message);
-  //       }
-  //       resolve(data);
-  //       });
-  //   });
-  // }
+  async uploadS3(file, bucket, name) {
+    const s3 = this.getS3();
+    const params = {
+        Bucket: bucket,
+        Key: String(name),
+        Body: file,
+    };
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+        if (err) {
+            reject(err.message);
+        }
+        resolve(data);
+        });
+    });
+  }
 
-  // getS3() {
-  //   return new S3({
-  //       accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-  //       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
-  //   });
-  // }
+  getS3() {
+    return new S3({
+        accessKeyId: 'AKIAQFLZDKPIZWSUOJHJ',
+        secretAccessKey: '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'
+    });
+  }
 
   async getSubItems(reqBody: any): Promise<any> {
     const [items, count] = await this.subItemModel.findAndCount({});
@@ -96,16 +100,17 @@ export class ItemsService {
     let imagePath = "";
     if(file) {
       const { originalname } = file;
-      // const bucketS3 = this.configService.get('CUSTOMER_RECEIPTS_BUCKET_NAME');
-      // const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
-      // imagePath = uploadedData.Location
+      const bucketS3 = 'kitchen-holiday-images';
+      const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
     }
     let item = {
       name: reqBody.name,
       description: reqBody.description,
       isVeg: reqBody.isVeg,
       image: imagePath,
-      quantity: reqBody.quantity
+      quantity: reqBody.quantity,
+      price: reqBody.price
     }
     
     // return uploadedData.Location
