@@ -27,6 +27,25 @@ export class OrdersController {
     return response
   }
 
+  @Post('getOrder')
+  async getOrder(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Items list'
+    }
+    const order = await this.orderService.getOrder(reqBody)
+    if(!order) {
+        response.success = false;
+        response.message = "Problem in getting order";
+    } else {
+      response.data = order
+    }
+    
+    
+    return response
+  }
+
   @Post('addOrder')
   async addOrder(@Body() reqBody: any) {
       let response = {
@@ -70,6 +89,23 @@ export class OrdersController {
           message: ''
       }
       const order = await this.orderService.updateOrderStatus(reqBody)
+      if (!order) {
+          response.success = false;
+          response.message = "problem in updating order";
+      } else {
+          response.data = order
+      }
+      return response
+  }
+
+  @Post('updateOrder')
+  async updateOrder(@Body() reqBody: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const order = await this.orderService.updateOrder(reqBody)
       if (!order) {
           response.success = false;
           response.message = "problem in updating order";

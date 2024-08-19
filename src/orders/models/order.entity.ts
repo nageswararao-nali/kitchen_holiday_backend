@@ -51,6 +51,15 @@ export class OrdersEntity {
   @Column({default: 0})
   subscriptionId: number;
 
+  @Column({default: 0})
+  deliveryParterId: number;
+
+  @Column({nullable: true})
+  latitude: string;
+
+  @Column({nullable: true})
+  longitude: string;
+
   @CreateDateColumn()
   created_at: Date;
 }

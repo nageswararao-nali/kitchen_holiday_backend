@@ -9,13 +9,19 @@ export class UserEntity {
   @Column()
   username: string;
 
+  @Column({nullable: true})
+  fName: string;
+
+  @Column({nullable: true})
+  lName: string;
+
   @Column()
   password: string;
 
-  @Column()
+  @Column({nullable: true})
   mobile: string;
 
-  @Column()
+  @Column({nullable: true})
   email: string;
 
   @Column({default: 'customer'})

@@ -14,5 +14,6 @@ export declare class OrdersService {
     getOrderDates(startDate: any, noOrders: any, planDays: any): Promise<any>;
     addUserOrder(reqBody: any): Promise<any>;
     updateOrderStatus(reqBody: any): Promise<any>;
+    updateOrder(reqBody: any): Promise<any>;
     remove(id: string): Promise<any>;
 }

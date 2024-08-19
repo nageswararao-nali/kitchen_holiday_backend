@@ -28,6 +28,8 @@ export class UsersService {
   async create(reqBody: any): Promise<any> {
 
     let userInput = {
+      fName: reqBody.fName,
+      lName: reqBody.lName,
       username: reqBody.username,
       mobile: reqBody.mobile,
       email: reqBody.email,
@@ -54,11 +56,11 @@ export class UsersService {
   //   return false;
   // }
 
-  async login(username: string, password: string): Promise<boolean> {
+  async login(username: string, password: string, userType: string): Promise<boolean> {
     const user = await this.usersRepo.findOneBy({username});
     console.log(user)
     console.log(user.password, password)
-    if (user && user.password === password) {
+    if (user && user.password === password && user.user_type == userType) {
       return true;
     }
     return false;

@@ -20,8 +20,8 @@ let AuthService = class AuthService {
         this.jwtService = jwtService;
         this.msg91Service = msg91Service;
     }
-    async login(username, password) {
-        const isValid = await this.usersService.login(username, password);
+    async login(username, password, userType) {
+        const isValid = await this.usersService.login(username, password, userType);
         if (isValid) {
             const user = await this.usersService.findOneByUsername(username);
             const payload = { username: user.username, sub: user.id };

@@ -7,6 +7,11 @@ export declare class OrdersController {
         success: boolean;
         message: string;
     }>;
+    getOrder(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
     addOrder(reqBody: any): Promise<{
         success: boolean;
         data: {};
@@ -18,6 +23,11 @@ export declare class OrdersController {
         message: string;
     }>;
     updateOrderStatus(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
+    updateOrder(reqBody: any): Promise<{
         success: boolean;
         data: {};
         message: string;

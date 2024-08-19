@@ -35,6 +35,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async getOrder(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Items list'
+        };
+        const order = await this.orderService.getOrder(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "Problem in getting order";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
     async addOrder(reqBody) {
         let response = {
             success: true,
@@ -83,6 +99,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async updateOrder(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.orderService.updateOrder(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in updating order";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -92,6 +124,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrders", null);
+__decorate([
+    (0, common_1.Post)('getOrder'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getOrder", null);
 __decorate([
     (0, common_1.Post)('addOrder'),
     __param(0, (0, common_1.Body)()),
@@ -113,6 +152,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateOrderStatus", null);
+__decorate([
+    (0, common_1.Post)('updateOrder'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "updateOrder", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrdersService])

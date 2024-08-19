@@ -20,7 +20,7 @@ let AuthController = class AuthController {
         this.authService = authService;
     }
     async login(body) {
-        let resp = await this.authService.login(body.username, body.password);
+        let resp = await this.authService.login(body.username, body.password, body.userType);
         let response = {
             success: true,
             message: 'User Loggedin',

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { OrdersEntity } from '../models/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
@@ -35,6 +35,8 @@ export class OrdersService {
     }
     if(reqBody.status) {
         whereCon['status'] = reqBody.status
+    } else {
+      whereCon['status'] = Not('cancelled')
     }
     if(reqBody.city) {
         whereCon['city'] = reqBody.city
@@ -48,13 +50,21 @@ export class OrdersService {
     if(reqBody.userId) {
       whereCon['userId'] = reqBody.userId
     }
+    
     const [items, count] = await this.orderModel.findAndCount({where: whereCon, order:{created_at: 'DESC'} });
     return {items, count};
   }
 
   async getOrder(reqBody: any): Promise<any> {
+    let orderData = {}
     const item = await this.orderModel.findOneBy({id: reqBody.id});
-    return item;
+    if(item.deliveryParterId) {
+      let deliveryBoy = await this.userService.findOneById(item.deliveryParterId)
+      orderData = {...item, deliveryBoy: deliveryBoy}
+    } else {
+      orderData = item
+    }
+    return orderData;
   }
 
   async addOrder(reqBody: any): Promise<any> {
@@ -149,7 +159,9 @@ export class OrdersService {
         orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         status: reqBody.status,
         orderType: reqBody.orderType,
-        subscriptionId: reqBody.subscriptionId
+        subscriptionId: reqBody.subscriptionId,
+        latitude: reqBody.latitude,
+        longitude: reqBody.longitude
       }
       console.log(order)
       createdItem = await this.orderModel.save(order);
@@ -159,6 +171,11 @@ export class OrdersService {
 
   async updateOrderStatus(reqBody: any): Promise<any> {
     let order = await this.orderModel.update({id: reqBody.orderId}, {status: reqBody.status})
+    return order
+  }
+
+  async updateOrder(reqBody: any): Promise<any> {
+    let order = await this.orderModel.update({id: reqBody.orderId}, reqBody.updateData)
     return order
   }
   

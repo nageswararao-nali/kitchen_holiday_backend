@@ -8,7 +8,7 @@ export declare class UsersService {
     findOneByUsername(username: string): Promise<any>;
     findOneById(id: number): Promise<any>;
     create(reqBody: any): Promise<any>;
-    login(username: string, password: string): Promise<boolean>;
+    login(username: string, password: string, userType: string): Promise<boolean>;
     totalUsers(reqBody: any): Promise<any>;
     getUsers(reqBody: any): Promise<any>;
     userAddressesByUserId(userId: number): Promise<any>;

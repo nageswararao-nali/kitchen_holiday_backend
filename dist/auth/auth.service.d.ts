@@ -6,5 +6,5 @@ export declare class AuthService {
     private jwtService;
     private msg91Service;
     constructor(usersService: UsersService, jwtService: JwtService, msg91Service: Msg91Service);
-    login(username: string, password: string): Promise<any>;
+    login(username: string, password: string, userType: string): Promise<any>;
 }

@@ -34,6 +34,8 @@ let UsersService = class UsersService {
     }
     async create(reqBody) {
         let userInput = {
+            fName: reqBody.fName,
+            lName: reqBody.lName,
             username: reqBody.username,
             mobile: reqBody.mobile,
             email: reqBody.email,
@@ -45,11 +47,11 @@ let UsersService = class UsersService {
         let user = await this.usersRepo.save(userInput);
         return user;
     }
-    async login(username, password) {
+    async login(username, password, userType) {
         const user = await this.usersRepo.findOneBy({ username });
         console.log(user);
         console.log(user.password, password);
-        if (user && user.password === password) {
+        if (user && user.password === password && user.user_type == userType) {
             return true;
         }
         return false;

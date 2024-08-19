@@ -5,6 +5,7 @@ export declare class AuthController {
     login(body: {
         username: string;
         password: string;
+        userType: string;
     }): Promise<{
         success: boolean;
         message: string;

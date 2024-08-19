@@ -43,6 +43,9 @@ let OrdersService = class OrdersService {
         if (reqBody.status) {
             whereCon['status'] = reqBody.status;
         }
+        else {
+            whereCon['status'] = (0, typeorm_2.Not)('cancelled');
+        }
         if (reqBody.city) {
             whereCon['city'] = reqBody.city;
         }
@@ -59,8 +62,16 @@ let OrdersService = class OrdersService {
         return { items, count };
     }
     async getOrder(reqBody) {
+        let orderData = {};
         const item = await this.orderModel.findOneBy({ id: reqBody.id });
-        return item;
+        if (item.deliveryParterId) {
+            let deliveryBoy = await this.userService.findOneById(item.deliveryParterId);
+            orderData = { ...item, deliveryBoy: deliveryBoy };
+        }
+        else {
+            orderData = item;
+        }
+        return orderData;
     }
     async addOrder(reqBody) {
         console.log("add order");
@@ -145,7 +156,9 @@ let OrdersService = class OrdersService {
                 orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
                 status: reqBody.status,
                 orderType: reqBody.orderType,
-                subscriptionId: reqBody.subscriptionId
+                subscriptionId: reqBody.subscriptionId,
+                latitude: reqBody.latitude,
+                longitude: reqBody.longitude
             };
             console.log(order);
             createdItem = await this.orderModel.save(order);
@@ -154,6 +167,10 @@ let OrdersService = class OrdersService {
     }
     async updateOrderStatus(reqBody) {
         let order = await this.orderModel.update({ id: reqBody.orderId }, { status: reqBody.status });
+        return order;
+    }
+    async updateOrder(reqBody) {
+        let order = await this.orderModel.update({ id: reqBody.orderId }, reqBody.updateData);
         return order;
     }
     async remove(id) {
