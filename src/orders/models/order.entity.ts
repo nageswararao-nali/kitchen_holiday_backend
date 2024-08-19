@@ -27,6 +27,15 @@ export class OrdersEntity {
   @Column({nullable: true})
   totalAmount: number;
 
+  @Column({nullable: true})
+  quantity: number;
+
+  @Column({nullable: true})
+  subItems: string;
+
+  @Column({nullable: true})
+  itemName: string;
+
   @Column({ type: 'date' })
   orderDate: string;
 
@@ -38,6 +47,9 @@ export class OrdersEntity {
 
   @Column({default: 'normal'})
   orderType: string;
+
+  @Column({default: 0})
+  subscriptionId: number;
 
   @CreateDateColumn()
   created_at: Date;

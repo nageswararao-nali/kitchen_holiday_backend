@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
 const order_service_1 = require("../services/order.service");
-const jwt_auth_guard_1 = require("../../auth/jwt-auth.guard");
 let OrdersController = class OrdersController {
     constructor(orderService) {
         this.orderService = orderService;
@@ -43,6 +42,22 @@ let OrdersController = class OrdersController {
             message: ''
         };
         const order = await this.orderService.addOrder(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in adding order";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
+    async addUserOrder(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.orderService.addUserOrder(reqBody);
         if (!order) {
             response.success = false;
             response.message = "problem in adding order";
@@ -85,6 +100,13 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "addOrder", null);
 __decorate([
+    (0, common_1.Post)('addUserOrder'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "addUserOrder", null);
+__decorate([
     (0, common_1.Post)('updateOrderStatus'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -93,7 +115,6 @@ __decorate([
 ], OrdersController.prototype, "updateOrderStatus", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [order_service_1.OrdersService])
 ], OrdersController);
 //# sourceMappingURL=order.controller.js.map

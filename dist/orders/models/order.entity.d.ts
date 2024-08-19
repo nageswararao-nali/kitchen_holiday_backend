@@ -7,9 +7,13 @@ export declare class OrdersEntity {
     address: string;
     itemId: number;
     totalAmount: number;
+    quantity: number;
+    subItems: string;
+    itemName: string;
     orderDate: string;
     orderDateTime: string;
     status: string;
     orderType: string;
+    subscriptionId: number;
     created_at: Date;
 }

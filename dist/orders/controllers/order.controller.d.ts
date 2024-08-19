@@ -12,6 +12,11 @@ export declare class OrdersController {
         data: {};
         message: string;
     }>;
+    addUserOrder(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
     updateOrderStatus(reqBody: any): Promise<{
         success: boolean;
         data: {};

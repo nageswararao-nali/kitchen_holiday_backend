@@ -47,6 +47,18 @@ __decorate([
     __metadata("design:type", Number)
 ], OrdersEntity.prototype, "totalAmount", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], OrdersEntity.prototype, "quantity", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], OrdersEntity.prototype, "subItems", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], OrdersEntity.prototype, "itemName", void 0);
+__decorate([
     (0, typeorm_1.Column)({ type: 'date' }),
     __metadata("design:type", String)
 ], OrdersEntity.prototype, "orderDate", void 0);
@@ -62,6 +74,10 @@ __decorate([
     (0, typeorm_1.Column)({ default: 'normal' }),
     __metadata("design:type", String)
 ], OrdersEntity.prototype, "orderType", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], OrdersEntity.prototype, "subscriptionId", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

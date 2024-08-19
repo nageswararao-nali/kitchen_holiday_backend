@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('orders')
-@UseGuards(JwtAuthGuard)
+// @UseGuards(JwtAuthGuard)
 export class OrdersController {
   constructor(private readonly orderService: OrdersService) {}
 
@@ -43,6 +43,24 @@ export class OrdersController {
       }
       return response
   }
+
+  @Post('addUserOrder')
+  async addUserOrder(@Body() reqBody: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const order = await this.orderService.addUserOrder(reqBody)
+      if (!order) {
+          response.success = false;
+          response.message = "problem in adding order";
+      } else {
+          response.data = order
+      }
+      return response
+  }
+  
 
   @Post('updateOrderStatus')
   async updateOrderStatus(@Body() reqBody: any) {
