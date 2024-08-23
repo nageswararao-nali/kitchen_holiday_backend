@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ZonesController = void 0;
 const common_1 = require("@nestjs/common");
 const zone_service_1 = require("../services/zone.service");
-const jwt_auth_guard_1 = require("../../auth/jwt-auth.guard");
 let ZonesController = class ZonesController {
     constructor(zoneService) {
         this.zoneService = zoneService;
@@ -52,6 +51,38 @@ let ZonesController = class ZonesController {
         }
         return response;
     }
+    async getDeliverySlots(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Zones list'
+        };
+        const { items, count } = await this.zoneService.getDeliverySlots(reqBody);
+        if (!count) {
+            response.success = false;
+            response.message = "Problem in getting zones list";
+        }
+        else {
+            response.data = { items, count };
+        }
+        return response;
+    }
+    async addDeliverySlot(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.zoneService.addDeliverySlot(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in adding zone";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
 };
 exports.ZonesController = ZonesController;
 __decorate([
@@ -68,9 +99,22 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ZonesController.prototype, "addZone", null);
+__decorate([
+    (0, common_1.Post)('getDeliverySlots'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "getDeliverySlots", null);
+__decorate([
+    (0, common_1.Post)('addDeliverySlot'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "addDeliverySlot", null);
 exports.ZonesController = ZonesController = __decorate([
     (0, common_1.Controller)('zones'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [zone_service_1.ZonesService])
 ], ZonesController);
 //# sourceMappingURL=zone.controller.js.map

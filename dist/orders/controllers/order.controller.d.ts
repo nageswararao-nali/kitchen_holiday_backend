@@ -32,4 +32,14 @@ export declare class OrdersController {
         data: {};
         message: string;
     }>;
+    updateMySubscription(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    getOrderDates(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
 }

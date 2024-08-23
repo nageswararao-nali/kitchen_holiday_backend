@@ -18,5 +18,7 @@ export declare class OrdersEntity {
     deliveryParterId: number;
     latitude: string;
     longitude: string;
+    deliverySlot: string;
+    mySubId: number;
     created_at: Date;
 }

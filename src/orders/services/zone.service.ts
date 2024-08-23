@@ -8,12 +8,15 @@ import * as moment from 'moment';
 import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
 import { ZonesEntity } from '../models/zone.entity';
+import { DeliverySlotsEntity } from '../models/deliverySlots.entity';
 
 @Injectable()
 export class ZonesService {
   constructor(
     @InjectRepository(ZonesEntity)
-    private zoneRepo: Repository<ZonesEntity>
+    private zoneRepo: Repository<ZonesEntity>,
+    @InjectRepository(DeliverySlotsEntity)
+    private dsRepo: Repository<DeliverySlotsEntity>
   ) {}
 
   findOne(id: number): Promise<ZonesEntity> {
@@ -34,6 +37,24 @@ export class ZonesService {
     }
     // return uploadedData.Location
     const createdItem = await this.zoneRepo.save(subscription);
+    return createdItem;
+  }
+
+  async getDeliverySlots(reqBody: any): Promise<any> {
+    let whereCon: any = {}
+    const [items, count] = await this.dsRepo.findAndCount({where: whereCon, order:{created_at: 'DESC'} });
+    return {items, count};
+  }
+
+  
+  async addDeliverySlot(reqBody: any): Promise<any> {
+    let subscription = {
+      name: reqBody.name,
+      startTime: reqBody.startTime,
+      endTime: reqBody.endTime
+    }
+    // return uploadedData.Location
+    const createdItem = await this.dsRepo.save(subscription);
     return createdItem;
   }
 

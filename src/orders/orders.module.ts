@@ -12,10 +12,12 @@ import { SubscriptionsService } from './services/subscription.service';
 import { ZonesController } from './controllers/zone.controller';
 import { ZonesService } from './services/zone.service';
 import { ZonesEntity } from './models/zone.entity';
+import { DeliverySlotsEntity } from './models/deliverySlots.entity';
+import { MySubscriptionsEntity } from './models/mysubscriptions.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OrdersEntity, SubscriptionsEntity, ZonesEntity]),
+    TypeOrmModule.forFeature([OrdersEntity, SubscriptionsEntity, ZonesEntity, DeliverySlotsEntity, MySubscriptionsEntity]),
     UsersModule,
     ItemsModule
   ],

@@ -60,6 +60,12 @@ export class OrdersEntity {
   @Column({nullable: true})
   longitude: string;
 
+  @Column({nullable: true})
+  deliverySlot: string;
+
+  @Column({default: 0})
+  mySubId: number;
+
   @CreateDateColumn()
   created_at: Date;
 }

@@ -51,6 +51,22 @@ let SubscriptionsController = class SubscriptionsController {
         }
         return response;
     }
+    async getMySubscriptions(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const { items, count } = await this.subscriptionService.getMySubscriptions(reqBody);
+        if (!count) {
+            response.success = false;
+            response.message = "Problem in getting subscriptions list the user";
+        }
+        else {
+            response.data = { items, count };
+        }
+        return response;
+    }
 };
 exports.SubscriptionsController = SubscriptionsController;
 __decorate([
@@ -67,6 +83,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SubscriptionsController.prototype, "addSubscription", null);
+__decorate([
+    (0, common_1.Post)('getMySubscriptions'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SubscriptionsController.prototype, "getMySubscriptions", null);
 exports.SubscriptionsController = SubscriptionsController = __decorate([
     (0, common_1.Controller)('subscriptions'),
     __metadata("design:paramtypes", [subscription_service_1.SubscriptionsService])

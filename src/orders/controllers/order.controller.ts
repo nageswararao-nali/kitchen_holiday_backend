@@ -115,23 +115,40 @@ export class OrdersController {
       return response
   }
 
-//   @Get(':id')
-//   findOne(@Param('id') id: string): Promise<Item> {
-//     return this.itemsService.findOne(id);
-//   }
+  @Post('updateMySubscription')
+  async updateMySubscription(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const sub = await this.orderService.updateMySubscription(reqBody)
+    if(!sub) {
+        response.success = false;
+        response.message = "Problem in getting subscriptions list the user";
+    } else {
+      response.data = sub
+    }
+    
+    return response
+  }
 
-//   @Post()
-//   create(@Body() item: Item): Promise<Item> {
-//     return this.itemsService.create(item);
-//   }
-
-//   @Put(':id')
-//   update(@Param('id') id: string, @Body() item: Item): Promise<Item> {
-//     return this.itemsService.update(id, item);
-//   }
-
-//   @Delete(':id')
-//   remove(@Param('id') id: string): Promise<any> {
-//     return this.itemsService.remove(id);
-//   }
+  @Post('getOrderDates')
+  async getOrderDates(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const sub = await this.orderService.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan)
+    if(!sub) {
+        response.success = false;
+        response.message = "Problem in getting subscriptions list the user";
+    } else {
+      response.data = sub
+    }
+    
+    return response
+  }
+  
 }

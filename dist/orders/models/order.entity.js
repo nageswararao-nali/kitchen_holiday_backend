@@ -91,6 +91,14 @@ __decorate([
     __metadata("design:type", String)
 ], OrdersEntity.prototype, "longitude", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], OrdersEntity.prototype, "deliverySlot", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 0 }),
+    __metadata("design:type", Number)
+], OrdersEntity.prototype, "mySubId", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], OrdersEntity.prototype, "created_at", void 0);

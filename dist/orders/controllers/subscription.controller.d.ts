@@ -12,4 +12,9 @@ export declare class SubscriptionsController {
         data: {};
         message: string;
     }>;
+    getMySubscriptions(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
 }

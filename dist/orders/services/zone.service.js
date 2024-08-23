@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const zone_entity_1 = require("../models/zone.entity");
+const deliverySlots_entity_1 = require("../models/deliverySlots.entity");
 let ZonesService = class ZonesService {
-    constructor(zoneRepo) {
+    constructor(zoneRepo, dsRepo) {
         this.zoneRepo = zoneRepo;
+        this.dsRepo = dsRepo;
     }
     findOne(id) {
         return this.zoneRepo.findOneBy({ id });
@@ -37,11 +39,27 @@ let ZonesService = class ZonesService {
         const createdItem = await this.zoneRepo.save(subscription);
         return createdItem;
     }
+    async getDeliverySlots(reqBody) {
+        let whereCon = {};
+        const [items, count] = await this.dsRepo.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
+        return { items, count };
+    }
+    async addDeliverySlot(reqBody) {
+        let subscription = {
+            name: reqBody.name,
+            startTime: reqBody.startTime,
+            endTime: reqBody.endTime
+        };
+        const createdItem = await this.dsRepo.save(subscription);
+        return createdItem;
+    }
 };
 exports.ZonesService = ZonesService;
 exports.ZonesService = ZonesService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(zone_entity_1.ZonesEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(deliverySlots_entity_1.DeliverySlotsEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], ZonesService);
 //# sourceMappingURL=zone.service.js.map

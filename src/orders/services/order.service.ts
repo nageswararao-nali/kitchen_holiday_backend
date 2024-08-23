@@ -8,14 +8,19 @@ import * as moment from 'moment';
 import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
 import { Subscription } from 'rxjs';
+import { MySubscriptionsEntity } from '../models/mysubscriptions.entity';
+import { SubscriptionsService } from './subscription.service';
 
 @Injectable()
 export class OrdersService {
   constructor(
     @InjectRepository(OrdersEntity)
     private orderModel: Repository<OrdersEntity>,
+    @InjectRepository(MySubscriptionsEntity)
+    private mySubModel: Repository<MySubscriptionsEntity>,
     private userService: UsersService,
-    private itemSerivce: ItemsService
+    private itemSerivce: ItemsService,
+    private subSerivce: SubscriptionsService
   ) {}
 
   findOne(id: number): Promise<OrdersEntity> {
@@ -141,9 +146,53 @@ export class OrdersService {
         subItems[subItemId] = subItems[subItemId]+1
       }
     }
-    let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
-    console.log(orderDates)
-    for(let orderDate of orderDates) {
+    if(reqBody.startDate) {
+      let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
+      console.log(orderDates)
+      let subscription = await this.subSerivce.getSubscription({id: reqBody.subscriptionId})
+      let mySubObj = {
+        itemId: reqBody.itemId,
+        itemName: reqBody.itemName,
+        subItems: JSON.stringify(subItems),
+        quantity: reqBody.quantity,
+        startDate: reqBody.startDate,
+        endDate: orderDates[orderDates.length -1],
+        userId: reqBody.userId,
+        subId: reqBody.subscriptionId,
+        subName: subscription.name,
+        price: reqBody.totalAmount,
+        orderDates: JSON.stringify(orderDates),
+        selectedPlan: JSON.stringify(reqBody.selectedPlan)
+      }
+      let muSub = await this.mySubModel.save(mySubObj)
+      for(let orderDate of orderDates) {
+        let order = {
+          userId: reqBody.userId,
+          itemId: reqBody.itemId,
+          itemName: reqBody.itemName,
+          subItems: JSON.stringify(subItems),
+          quantity: reqBody.quantity,
+          addressId: reqBody.addressId,
+          totalAmount: reqBody.totalAmount,
+          customerName: reqBody.customerName,
+          customerMobile: reqBody.mobile,
+          address: reqBody.address,
+          orderDate: orderDate,
+          orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+          status: reqBody.status,
+          orderType: reqBody.orderType,
+          subscriptionId: reqBody.subscriptionId,
+          latitude: reqBody.latitude,
+          longitude: reqBody.longitude,
+          deliverySlot: reqBody.deliverySlot,
+          mySubId: muSub.id
+        }
+        console.log(order)
+        createdItem = await this.orderModel.save(order);
+      }
+      
+    } else {
+      console.log("-----")
       let order = {
         userId: reqBody.userId,
         itemId: reqBody.itemId,
@@ -155,17 +204,19 @@ export class OrdersService {
         customerName: reqBody.customerName,
         customerMobile: reqBody.mobile,
         address: reqBody.address,
-        orderDate: orderDate,
+        orderDate: moment().format('YYYY-MM-DD'),
         orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
         status: reqBody.status,
         orderType: reqBody.orderType,
-        subscriptionId: reqBody.subscriptionId,
+        subscriptionId: 0,
         latitude: reqBody.latitude,
-        longitude: reqBody.longitude
+        longitude: reqBody.longitude,
+        deliverySlot: reqBody.deliverySlot
       }
       console.log(order)
       createdItem = await this.orderModel.save(order);
     }
+    
     return createdItem
   }
 
@@ -178,38 +229,57 @@ export class OrdersService {
     let order = await this.orderModel.update({id: reqBody.orderId}, reqBody.updateData)
     return order
   }
-  
 
-  // async uploadS3(file, bucket, name) {
-  //   const s3 = this.getS3();
-  //   const params = {
-  //       Bucket: bucket,
-  //       Key: String(name),
-  //       Body: file,
-  //   };
-  //   return new Promise((resolve, reject) => {
-  //       s3.upload(params, (err, data) => {
-  //       if (err) {
-  //           reject(err.message);
-  //       }
-  //       resolve(data);
-  //       });
-  //   });
-  // }
-
-  // getS3() {
-  //   return new S3({
-  //       accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
-  //       secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
-  //   });
-  // }
-
-  // async update(id: string, item: ItemEntity): Promise<ItemEntity> {
-  //   // return this.itemModel.findByIdAndUpdate(id, item, { new: true }).exec();
-  // }
-
-  async remove(id: string): Promise<any> {
-    // return this.itemModel.findByIdAndRemove(id).exec();
-    return;
+  async updateMySubscription(reqBody: any): Promise<any> {
+    console.log("add order")
+    let mySub = await this.mySubModel.findOneBy({id: reqBody.subId})
+    let createdItem = {}
+    
+    if(reqBody.mySubLastDate) {
+      let mySubOrder = await this.orderModel.findOneBy({mySubId: reqBody.subId})
+      let currentDate = new Date(reqBody.mySubLastDate)
+      let startDate = currentDate.setDate(currentDate.getDate() + 1);
+      let orderDates = await this.getOrderDates(startDate, reqBody.dates.length, JSON.parse(mySub.selectedPlan));
+      console.log(orderDates)
+      let oldOrderDates = JSON.parse(mySub.orderDates)
+      for(let d of reqBody.dates) {
+        let index = oldOrderDates.indexOf(d)
+        if(index !== 1) {
+          oldOrderDates.splice(index, 1);
+        }
+      }
+      for(let orderDate of orderDates) {
+        let order = {
+          userId: mySubOrder.userId,
+          itemId: mySubOrder.itemId,
+          itemName: mySubOrder.itemName,
+          subItems: mySubOrder.subItems,
+          quantity: mySubOrder.quantity,
+          addressId: mySubOrder.addressId,
+          totalAmount: mySubOrder.totalAmount,
+          customerName: mySubOrder.customerName,
+          customerMobile: mySubOrder.customerMobile,
+          address: mySubOrder.address,
+          orderDate: orderDate,
+          orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+          status: mySubOrder.status,
+          orderType: mySubOrder.orderType,
+          subscriptionId: mySubOrder.subscriptionId,
+          latitude: mySubOrder.latitude,
+          longitude: mySubOrder.longitude,
+          deliverySlot: mySubOrder.deliverySlot
+        }
+        console.log(order)
+        createdItem = await this.orderModel.save(order);
+        oldOrderDates.push(orderDate)
+      }
+      
+      let dd = await this.mySubModel.update({id: reqBody.subId}, {orderDates: JSON.stringify(oldOrderDates)})
+      console.log(dd)
+    }
+    
+    return createdItem
   }
+  
+  
 }

@@ -115,6 +115,38 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async updateMySubscription(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const sub = await this.orderService.updateMySubscription(reqBody);
+        if (!sub) {
+            response.success = false;
+            response.message = "Problem in getting subscriptions list the user";
+        }
+        else {
+            response.data = sub;
+        }
+        return response;
+    }
+    async getOrderDates(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const sub = await this.orderService.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
+        if (!sub) {
+            response.success = false;
+            response.message = "Problem in getting subscriptions list the user";
+        }
+        else {
+            response.data = sub;
+        }
+        return response;
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -159,6 +191,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateOrder", null);
+__decorate([
+    (0, common_1.Post)('updateMySubscription'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "updateMySubscription", null);
+__decorate([
+    (0, common_1.Post)('getOrderDates'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getOrderDates", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrdersService])

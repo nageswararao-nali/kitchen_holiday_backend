@@ -12,4 +12,14 @@ export declare class ZonesController {
         data: {};
         message: string;
     }>;
+    getDeliverySlots(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    addDeliverySlot(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
 }

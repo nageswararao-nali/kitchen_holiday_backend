@@ -20,11 +20,15 @@ const typeorm_2 = require("typeorm");
 const moment = require("moment");
 const users_service_1 = require("../../users/users.service");
 const items_service_1 = require("../../items/services/items.service");
+const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
+const subscription_service_1 = require("./subscription.service");
 let OrdersService = class OrdersService {
-    constructor(orderModel, userService, itemSerivce) {
+    constructor(orderModel, mySubModel, userService, itemSerivce, subSerivce) {
         this.orderModel = orderModel;
+        this.mySubModel = mySubModel;
         this.userService = userService;
         this.itemSerivce = itemSerivce;
+        this.subSerivce = subSerivce;
     }
     findOne(id) {
         return this.orderModel.findOneBy({ id });
@@ -138,9 +142,53 @@ let OrdersService = class OrdersService {
                 subItems[subItemId] = subItems[subItemId] + 1;
             }
         }
-        let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
-        console.log(orderDates);
-        for (let orderDate of orderDates) {
+        if (reqBody.startDate) {
+            let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
+            console.log(orderDates);
+            let subscription = await this.subSerivce.getSubscription({ id: reqBody.subscriptionId });
+            let mySubObj = {
+                itemId: reqBody.itemId,
+                itemName: reqBody.itemName,
+                subItems: JSON.stringify(subItems),
+                quantity: reqBody.quantity,
+                startDate: reqBody.startDate,
+                endDate: orderDates[orderDates.length - 1],
+                userId: reqBody.userId,
+                subId: reqBody.subscriptionId,
+                subName: subscription.name,
+                price: reqBody.totalAmount,
+                orderDates: JSON.stringify(orderDates),
+                selectedPlan: JSON.stringify(reqBody.selectedPlan)
+            };
+            let muSub = await this.mySubModel.save(mySubObj);
+            for (let orderDate of orderDates) {
+                let order = {
+                    userId: reqBody.userId,
+                    itemId: reqBody.itemId,
+                    itemName: reqBody.itemName,
+                    subItems: JSON.stringify(subItems),
+                    quantity: reqBody.quantity,
+                    addressId: reqBody.addressId,
+                    totalAmount: reqBody.totalAmount,
+                    customerName: reqBody.customerName,
+                    customerMobile: reqBody.mobile,
+                    address: reqBody.address,
+                    orderDate: orderDate,
+                    orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    status: reqBody.status,
+                    orderType: reqBody.orderType,
+                    subscriptionId: reqBody.subscriptionId,
+                    latitude: reqBody.latitude,
+                    longitude: reqBody.longitude,
+                    deliverySlot: reqBody.deliverySlot,
+                    mySubId: muSub.id
+                };
+                console.log(order);
+                createdItem = await this.orderModel.save(order);
+            }
+        }
+        else {
+            console.log("-----");
             let order = {
                 userId: reqBody.userId,
                 itemId: reqBody.itemId,
@@ -152,13 +200,14 @@ let OrdersService = class OrdersService {
                 customerName: reqBody.customerName,
                 customerMobile: reqBody.mobile,
                 address: reqBody.address,
-                orderDate: orderDate,
+                orderDate: moment().format('YYYY-MM-DD'),
                 orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
                 status: reqBody.status,
                 orderType: reqBody.orderType,
-                subscriptionId: reqBody.subscriptionId,
+                subscriptionId: 0,
                 latitude: reqBody.latitude,
-                longitude: reqBody.longitude
+                longitude: reqBody.longitude,
+                deliverySlot: reqBody.deliverySlot
             };
             console.log(order);
             createdItem = await this.orderModel.save(order);
@@ -173,16 +222,63 @@ let OrdersService = class OrdersService {
         let order = await this.orderModel.update({ id: reqBody.orderId }, reqBody.updateData);
         return order;
     }
-    async remove(id) {
-        return;
+    async updateMySubscription(reqBody) {
+        console.log("add order");
+        let mySub = await this.mySubModel.findOneBy({ id: reqBody.subId });
+        let createdItem = {};
+        if (reqBody.mySubLastDate) {
+            let mySubOrder = await this.orderModel.findOneBy({ mySubId: reqBody.subId });
+            let currentDate = new Date(reqBody.mySubLastDate);
+            let startDate = currentDate.setDate(currentDate.getDate() + 1);
+            let orderDates = await this.getOrderDates(startDate, reqBody.dates.length, JSON.parse(mySub.selectedPlan));
+            console.log(orderDates);
+            let oldOrderDates = JSON.parse(mySub.orderDates);
+            for (let d of reqBody.dates) {
+                let index = oldOrderDates.indexOf(d);
+                if (index !== 1) {
+                    oldOrderDates.splice(index, 1);
+                }
+            }
+            for (let orderDate of orderDates) {
+                let order = {
+                    userId: mySubOrder.userId,
+                    itemId: mySubOrder.itemId,
+                    itemName: mySubOrder.itemName,
+                    subItems: mySubOrder.subItems,
+                    quantity: mySubOrder.quantity,
+                    addressId: mySubOrder.addressId,
+                    totalAmount: mySubOrder.totalAmount,
+                    customerName: mySubOrder.customerName,
+                    customerMobile: mySubOrder.customerMobile,
+                    address: mySubOrder.address,
+                    orderDate: orderDate,
+                    orderDateTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+                    status: mySubOrder.status,
+                    orderType: mySubOrder.orderType,
+                    subscriptionId: mySubOrder.subscriptionId,
+                    latitude: mySubOrder.latitude,
+                    longitude: mySubOrder.longitude,
+                    deliverySlot: mySubOrder.deliverySlot
+                };
+                console.log(order);
+                createdItem = await this.orderModel.save(order);
+                oldOrderDates.push(orderDate);
+            }
+            let dd = await this.mySubModel.update({ id: reqBody.subId }, { orderDates: JSON.stringify(oldOrderDates) });
+            console.log(dd);
+        }
+        return createdItem;
     }
 };
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.OrdersEntity)),
+    __param(1, (0, typeorm_1.InjectRepository)(mysubscriptions_entity_1.MySubscriptionsEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
         users_service_1.UsersService,
-        items_service_1.ItemsService])
+        items_service_1.ItemsService,
+        subscription_service_1.SubscriptionsService])
 ], OrdersService);
 //# sourceMappingURL=order.service.js.map

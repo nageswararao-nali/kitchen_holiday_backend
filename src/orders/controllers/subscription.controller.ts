@@ -44,5 +44,23 @@ export class SubscriptionsController {
       return response
   }
 
+  @Post('getMySubscriptions')
+  async getMySubscriptions(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const {items, count} = await this.subscriptionService.getMySubscriptions(reqBody)
+    if(!count) {
+        response.success = false;
+        response.message = "Problem in getting subscriptions list the user";
+    } else {
+      response.data = {items, count}
+    }
+    
+    return response
+  }
+  
   
 }

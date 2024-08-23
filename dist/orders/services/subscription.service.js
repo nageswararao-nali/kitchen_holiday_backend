@@ -17,9 +17,11 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const subscription_entity_1 = require("../models/subscription.entity");
+const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
 let SubscriptionsService = class SubscriptionsService {
-    constructor(subRepo) {
+    constructor(subRepo, mySubRepo) {
         this.subRepo = subRepo;
+        this.mySubRepo = mySubRepo;
     }
     findOne(id) {
         return this.subRepo.findOneBy({ id });
@@ -47,9 +49,17 @@ let SubscriptionsService = class SubscriptionsService {
         const [items, count] = await this.subRepo.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
         return { items, count };
     }
-    async getOrder(reqBody) {
+    async getSubscription(reqBody) {
         const item = await this.subRepo.findOneBy({ id: reqBody.id });
         return item;
+    }
+    async getMySubscriptions(reqBody) {
+        let whereCon = {};
+        if (reqBody.userId) {
+            whereCon['userId'] = reqBody.userId;
+        }
+        const [items, count] = await this.mySubRepo.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
+        return { items, count };
     }
     async addSubscription(reqBody) {
         let subscription = {
@@ -68,6 +78,8 @@ exports.SubscriptionsService = SubscriptionsService;
 exports.SubscriptionsService = SubscriptionsService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(subscription_entity_1.SubscriptionsEntity)),
-    __metadata("design:paramtypes", [typeorm_2.Repository])
+    __param(1, (0, typeorm_1.InjectRepository)(mysubscriptions_entity_1.MySubscriptionsEntity)),
+    __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository])
 ], SubscriptionsService);
 //# sourceMappingURL=subscription.service.js.map
