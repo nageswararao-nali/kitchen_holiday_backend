@@ -135,11 +135,11 @@ let OrdersService = class OrdersService {
             subItems[subItemId] = subItems[subItemId] + 1;
         }
         if (reqBody.extraSubItems && reqBody.extraSubItems.length) {
-            for (let subItemId of reqBody.extraSubItems) {
-                if (!subItems[subItemId]) {
-                    subItems[subItemId] = 0;
+            for (let subItemIdData of reqBody.extraSubItems) {
+                if (!subItems[subItemIdData.itemId]) {
+                    subItems[subItemIdData.itemId] = 0;
                 }
-                subItems[subItemId] = subItems[subItemId] + 1;
+                subItems[subItemIdData.itemId] = subItems[subItemIdData.itemId] + subItemIdData.quantity;
             }
         }
         if (reqBody.startDate) {
