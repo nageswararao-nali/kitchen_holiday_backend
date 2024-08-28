@@ -7,6 +7,7 @@ export declare class UserEntity {
     mobile: string;
     email: string;
     user_type: string;
+    image: string;
     isActive: boolean;
     created_at: Date;
 }

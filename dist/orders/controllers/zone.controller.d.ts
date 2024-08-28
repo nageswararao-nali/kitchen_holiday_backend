@@ -12,6 +12,16 @@ export declare class ZonesController {
         data: {};
         message: string;
     }>;
+    addUserMapping(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
+    getUserMapping(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
     getDeliverySlots(reqBody: any): Promise<{
         data: {};
         success: boolean;

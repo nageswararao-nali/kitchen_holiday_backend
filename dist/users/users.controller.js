@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
+const platform_express_1 = require("@nestjs/platform-express");
 let UsersController = class UsersController {
     constructor(usersService) {
         this.usersService = usersService;
@@ -108,6 +109,70 @@ let UsersController = class UsersController {
         }
         return response;
     }
+    async deleteUser(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'User list'
+        };
+        const delUserResp = await this.usersService.deleteUser(reqBody.userId);
+        if (!delUserResp) {
+            response.success = false;
+            response.message = "Problem in deleting user";
+        }
+        else {
+            response.data = delUserResp;
+        }
+        return response;
+    }
+    async getUserAddress(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'User address'
+        };
+        const address = await this.usersService.findAddressById(reqBody.id);
+        if (!address) {
+            response.success = false;
+            response.message = "Problem in getting users";
+        }
+        else {
+            response.data = address;
+        }
+        return response;
+    }
+    async updateUser(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'User list'
+        };
+        const delUserResp = await this.usersService.updateUser(reqBody);
+        if (!delUserResp) {
+            response.success = false;
+            response.message = "Problem in updating user";
+        }
+        else {
+            response.data = delUserResp;
+        }
+        return response;
+    }
+    async addItem(reqBody, itemImage) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const odometerUpload = await this.usersService.updateUserImage(itemImage, reqBody);
+        if (!odometerUpload) {
+            response.success = false;
+            response.message = "Problem in adding item";
+        }
+        else {
+            response.data = odometerUpload;
+        }
+        return response;
+    }
 };
 exports.UsersController = UsersController;
 __decorate([
@@ -152,6 +217,36 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUserAddresses", null);
+__decorate([
+    (0, common_1.Post)('deleteUser'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "deleteUser", null);
+__decorate([
+    (0, common_1.Post)('getUserAddress'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUserAddress", null);
+__decorate([
+    (0, common_1.Post)('updateUser'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "updateUser", null);
+__decorate([
+    (0, common_1.Post)('updateUserImage'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('userImage')),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "addItem", null);
 exports.UsersController = UsersController = __decorate([
     (0, common_1.Controller)('users'),
     __metadata("design:paramtypes", [users_service_1.UsersService])

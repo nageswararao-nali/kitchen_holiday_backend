@@ -14,10 +14,13 @@ import { ZonesService } from './services/zone.service';
 import { ZonesEntity } from './models/zone.entity';
 import { DeliverySlotsEntity } from './models/deliverySlots.entity';
 import { MySubscriptionsEntity } from './models/mysubscriptions.entity';
+import { ZoneMappingEntity } from './models/zoneMapping.entity';
+import { NotificationsEntity } from './models/notifications.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([OrdersEntity, SubscriptionsEntity, ZonesEntity, DeliverySlotsEntity, MySubscriptionsEntity]),
+    TypeOrmModule.forFeature([OrdersEntity, SubscriptionsEntity, ZonesEntity, 
+      DeliverySlotsEntity, MySubscriptionsEntity, ZoneMappingEntity, NotificationsEntity]),
     UsersModule,
     ItemsModule
   ],

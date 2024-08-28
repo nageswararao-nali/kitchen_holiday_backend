@@ -1,7 +1,8 @@
 // src/users/users.controller.ts
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UserEntity } from './models/user.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UsersController {
@@ -105,6 +106,78 @@ export class UsersController {
     }
     
     return response
+  }
+
+  @Post('deleteUser')
+  async deleteUser(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'User list'
+    }
+    const delUserResp = await this.usersService.deleteUser(reqBody.userId)
+    if(!delUserResp) {
+        response.success = false;
+        response.message = "Problem in deleting user";
+    } else {
+      response.data = delUserResp
+    }
+    
+    return response
+  }
+
+  @Post('getUserAddress')
+  async getUserAddress(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'User address'
+    }
+    const address = await this.usersService.findAddressById(reqBody.id)
+    if(!address) {
+        response.success = false;
+        response.message = "Problem in getting users";
+    } else {
+      response.data = address
+    }
+    
+    return response
+  }
+
+  @Post('updateUser')
+  async updateUser(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'User list'
+    }
+    const delUserResp = await this.usersService.updateUser(reqBody)
+    if(!delUserResp) {
+        response.success = false;
+        response.message = "Problem in updating user";
+    } else {
+      response.data = delUserResp
+    }
+    
+    return response
+  }
+
+  @Post('updateUserImage')
+  @UseInterceptors(FileInterceptor('userImage'))
+  async addItem(@Body() reqBody: any, @UploadedFile() itemImage: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const odometerUpload = await this.usersService.updateUserImage(itemImage, reqBody)
+      if (!odometerUpload) {
+          response.success = false;
+          response.message = "Problem in adding item";
+      } else {
+          response.data = odometerUpload
+      }
+      return response
   }
   
 }

@@ -5,6 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AddressEntity } from './models/address.entity';
+import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +15,7 @@ export class UsersService {
         private usersRepo: Repository<UserEntity>,
         @InjectRepository(AddressEntity)
         private addressRepo: Repository<AddressEntity>,
+        private configService: ConfigService
   ) {}
 
   async findOneByUsername(username: string): Promise<any> {
@@ -122,4 +125,53 @@ export class UsersService {
     return address
   }
 
+  async deleteUser(userId: number): Promise<any> {
+    let delResp = await this.usersRepo.delete({id: userId})
+    return delResp;
+  }
+
+  async updateUser(reqBody: any): Promise<any> {
+    let user = await this.usersRepo.update({id: reqBody.userId}, reqBody.updateData)
+    return user
+  }
+  
+  async updateUserImage(file, reqBody: any): Promise<any> {
+    let imagePath = "";
+    if(file) {
+      console.log("uploading file")
+      const { originalname } = file;
+      const bucketS3 = 'kitchen-holiday-images';
+      const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
+    }
+    
+    
+    // return uploadedData.Location
+    const createdItem = await this.usersRepo.update({id: reqBody.userId}, {image: imagePath});
+    return createdItem;
+  }
+
+  async uploadS3(file, bucket, name) {
+    const s3 = this.getS3();
+    const params = {
+        Bucket: bucket,
+        Key: String(name),
+        Body: file,
+    };
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+        if (err) {
+            reject(err.message);
+        }
+        resolve(data);
+        });
+    });
+  }
+
+  getS3() {
+    return new S3({
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
+    });
+  }
 }

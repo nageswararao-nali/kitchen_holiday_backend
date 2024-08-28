@@ -27,6 +27,9 @@ export class UserEntity {
   @Column({default: 'customer'})
   user_type: string;
 
+  @Column({nullable: true})
+  image: string;
+
   @Column({ default: true })
   isActive: boolean;
 

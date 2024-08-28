@@ -18,10 +18,13 @@ const user_entity_1 = require("./models/user.entity");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
 const address_entity_1 = require("./models/address.entity");
+const aws_sdk_1 = require("aws-sdk");
+const config_1 = require("@nestjs/config");
 let UsersService = class UsersService {
-    constructor(usersRepo, addressRepo) {
+    constructor(usersRepo, addressRepo, configService) {
         this.usersRepo = usersRepo;
         this.addressRepo = addressRepo;
+        this.configService = configService;
     }
     async findOneByUsername(username) {
         console.log("username", username);
@@ -106,6 +109,48 @@ let UsersService = class UsersService {
         let address = await this.addressRepo.save(userInput);
         return address;
     }
+    async deleteUser(userId) {
+        let delResp = await this.usersRepo.delete({ id: userId });
+        return delResp;
+    }
+    async updateUser(reqBody) {
+        let user = await this.usersRepo.update({ id: reqBody.userId }, reqBody.updateData);
+        return user;
+    }
+    async updateUserImage(file, reqBody) {
+        let imagePath = "";
+        if (file) {
+            console.log("uploading file");
+            const { originalname } = file;
+            const bucketS3 = 'kitchen-holiday-images';
+            const uploadedData = await this.uploadS3(file.buffer, bucketS3, originalname);
+            imagePath = uploadedData.Location;
+        }
+        const createdItem = await this.usersRepo.update({ id: reqBody.userId }, { image: imagePath });
+        return createdItem;
+    }
+    async uploadS3(file, bucket, name) {
+        const s3 = this.getS3();
+        const params = {
+            Bucket: bucket,
+            Key: String(name),
+            Body: file,
+        };
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err, data) => {
+                if (err) {
+                    reject(err.message);
+                }
+                resolve(data);
+            });
+        });
+    }
+    getS3() {
+        return new aws_sdk_1.S3({
+            accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
+        });
+    }
 };
 exports.UsersService = UsersService;
 exports.UsersService = UsersService = __decorate([
@@ -113,6 +158,7 @@ exports.UsersService = UsersService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(user_entity_1.UserEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(address_entity_1.AddressEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        config_1.ConfigService])
 ], UsersService);
 //# sourceMappingURL=users.service.js.map

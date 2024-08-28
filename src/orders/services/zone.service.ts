@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
 import { ZonesEntity } from '../models/zone.entity';
 import { DeliverySlotsEntity } from '../models/deliverySlots.entity';
+import { ZoneMappingEntity } from '../models/zoneMapping.entity';
 
 @Injectable()
 export class ZonesService {
@@ -16,7 +17,9 @@ export class ZonesService {
     @InjectRepository(ZonesEntity)
     private zoneRepo: Repository<ZonesEntity>,
     @InjectRepository(DeliverySlotsEntity)
-    private dsRepo: Repository<DeliverySlotsEntity>
+    private dsRepo: Repository<DeliverySlotsEntity>,
+    @InjectRepository(ZoneMappingEntity)
+    private zoneMapRepo: Repository<ZoneMappingEntity>
   ) {}
 
   findOne(id: number): Promise<ZonesEntity> {
@@ -58,4 +61,26 @@ export class ZonesService {
     return createdItem;
   }
 
+  
+  async addUserMapping(reqBody: any): Promise<any> {
+    let mapping = await this.zoneMapRepo.findOneBy({userId: reqBody.userId})
+    if(!mapping) {
+      let zipMap = {
+        userId: reqBody.userId,
+        zipcodes: reqBody.zipcodes
+      }
+      // return uploadedData.Location
+      const createdItem = await this.zoneMapRepo.save(zipMap);
+      return createdItem;
+    } else {
+      const createdItem = await this.zoneMapRepo.update({userId: reqBody.userId}, {zipcodes: reqBody.zipcodes});
+      return createdItem;
+    }
+  }
+
+  async getUserMapping(reqBody: any): Promise<any> {
+    const [items, count] = await this.zoneMapRepo.findAndCount({where: {userId: reqBody.userId}});
+    return {items, count};
+  }
+  
 }

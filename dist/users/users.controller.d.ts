@@ -27,4 +27,24 @@ export declare class UsersController {
         success: boolean;
         message: string;
     }>;
+    deleteUser(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    getUserAddress(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    updateUser(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    addItem(reqBody: any, itemImage: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
 }

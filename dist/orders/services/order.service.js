@@ -22,10 +22,14 @@ const users_service_1 = require("../../users/users.service");
 const items_service_1 = require("../../items/services/items.service");
 const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
 const subscription_service_1 = require("./subscription.service");
+const zoneMapping_entity_1 = require("../models/zoneMapping.entity");
+const notifications_entity_1 = require("../models/notifications.entity");
 let OrdersService = class OrdersService {
-    constructor(orderModel, mySubModel, userService, itemSerivce, subSerivce) {
+    constructor(orderModel, mySubModel, zoneMapRepo, notiRepo, userService, itemSerivce, subSerivce) {
         this.orderModel = orderModel;
         this.mySubModel = mySubModel;
+        this.zoneMapRepo = zoneMapRepo;
+        this.notiRepo = notiRepo;
         this.userService = userService;
         this.itemSerivce = itemSerivce;
         this.subSerivce = subSerivce;
@@ -142,6 +146,7 @@ let OrdersService = class OrdersService {
                 subItems[subItemIdData.itemId] = subItems[subItemIdData.itemId] + subItemIdData.quantity;
             }
         }
+        let zoneMapping = await this.zoneMapRepo.find({ where: { zipcodes: (0, typeorm_2.Like)(`%${reqBody.zipcode}%`) } });
         if (reqBody.startDate) {
             let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
             console.log(orderDates);
@@ -181,10 +186,19 @@ let OrdersService = class OrdersService {
                     latitude: reqBody.latitude,
                     longitude: reqBody.longitude,
                     deliverySlot: reqBody.deliverySlot,
-                    mySubId: muSub.id
+                    mySubId: muSub.id,
+                    deliveryParterId: (zoneMapping && zoneMapping.length) ? parseInt(zoneMapping[0].userId) : 0
                 };
                 console.log(order);
                 createdItem = await this.orderModel.save(order);
+                if (zoneMapping && zoneMapping.length) {
+                    let noti = {
+                        userId: zoneMapping[0].userId,
+                        content: 'Order Assigned #' + createdItem.id,
+                        created_at: new Date()
+                    };
+                    await this.notiRepo.save(noti);
+                }
             }
         }
         else {
@@ -275,7 +289,11 @@ exports.OrdersService = OrdersService = __decorate([
     (0, common_1.Injectable)(),
     __param(0, (0, typeorm_1.InjectRepository)(order_entity_1.OrdersEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(mysubscriptions_entity_1.MySubscriptionsEntity)),
+    __param(2, (0, typeorm_1.InjectRepository)(zoneMapping_entity_1.ZoneMappingEntity)),
+    __param(3, (0, typeorm_1.InjectRepository)(notifications_entity_1.NotificationsEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
+        typeorm_2.Repository,
+        typeorm_2.Repository,
         typeorm_2.Repository,
         users_service_1.UsersService,
         items_service_1.ItemsService,

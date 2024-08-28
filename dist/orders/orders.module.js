@@ -22,13 +22,16 @@ const zone_service_1 = require("./services/zone.service");
 const zone_entity_1 = require("./models/zone.entity");
 const deliverySlots_entity_1 = require("./models/deliverySlots.entity");
 const mysubscriptions_entity_1 = require("./models/mysubscriptions.entity");
+const zoneMapping_entity_1 = require("./models/zoneMapping.entity");
+const notifications_entity_1 = require("./models/notifications.entity");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
 exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
         imports: [
-            typeorm_1.TypeOrmModule.forFeature([order_entity_1.OrdersEntity, subscription_entity_1.SubscriptionsEntity, zone_entity_1.ZonesEntity, deliverySlots_entity_1.DeliverySlotsEntity, mysubscriptions_entity_1.MySubscriptionsEntity]),
+            typeorm_1.TypeOrmModule.forFeature([order_entity_1.OrdersEntity, subscription_entity_1.SubscriptionsEntity, zone_entity_1.ZonesEntity,
+                deliverySlots_entity_1.DeliverySlotsEntity, mysubscriptions_entity_1.MySubscriptionsEntity, zoneMapping_entity_1.ZoneMappingEntity, notifications_entity_1.NotificationsEntity]),
             users_module_1.UsersModule,
             items_module_1.ItemsModule
         ],

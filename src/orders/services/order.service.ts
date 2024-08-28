@@ -10,6 +10,8 @@ import { ItemsService } from 'src/items/services/items.service';
 import { Subscription } from 'rxjs';
 import { MySubscriptionsEntity } from '../models/mysubscriptions.entity';
 import { SubscriptionsService } from './subscription.service';
+import { ZoneMappingEntity } from '../models/zoneMapping.entity';
+import { NotificationsEntity } from '../models/notifications.entity';
 
 @Injectable()
 export class OrdersService {
@@ -18,6 +20,10 @@ export class OrdersService {
     private orderModel: Repository<OrdersEntity>,
     @InjectRepository(MySubscriptionsEntity)
     private mySubModel: Repository<MySubscriptionsEntity>,
+    @InjectRepository(ZoneMappingEntity)
+    private zoneMapRepo: Repository<ZoneMappingEntity>,
+    @InjectRepository(NotificationsEntity)
+    private notiRepo: Repository<NotificationsEntity>,
     private userService: UsersService,
     private itemSerivce: ItemsService,
     private subSerivce: SubscriptionsService
@@ -130,7 +136,7 @@ export class OrdersService {
 
   async addUserOrder(reqBody: any): Promise<any> {
     console.log("add order")
-    let createdItem = {}
+    let createdItem: any = {}
     let subItems = {}
     for(let subItemId of reqBody.subItems) {
       if(!subItems[subItemId]) {
@@ -146,6 +152,7 @@ export class OrdersService {
         subItems[subItemIdData.itemId] = subItems[subItemIdData.itemId]+subItemIdData.quantity
       }
     }
+    let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
     if(reqBody.startDate) {
       let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
       console.log(orderDates)
@@ -185,10 +192,20 @@ export class OrdersService {
           latitude: reqBody.latitude,
           longitude: reqBody.longitude,
           deliverySlot: reqBody.deliverySlot,
-          mySubId: muSub.id
+          mySubId: muSub.id,
+          deliveryParterId: (zoneMapping && zoneMapping.length) ? parseInt(zoneMapping[0].userId) : 0
         }
         console.log(order)
         createdItem = await this.orderModel.save(order);
+        if(zoneMapping && zoneMapping.length) {
+          let noti = {
+            userId: zoneMapping[0].userId,
+            content: 'Order Assigned #'+createdItem.id,
+            created_at: new Date()
+
+          }
+          await this.notiRepo.save(noti)
+        }
       }
       
     } else {

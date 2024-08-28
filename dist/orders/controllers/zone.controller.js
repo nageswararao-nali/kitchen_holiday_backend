@@ -51,6 +51,38 @@ let ZonesController = class ZonesController {
         }
         return response;
     }
+    async addUserMapping(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.zoneService.addUserMapping(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in adding zone mapping";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
+    async getUserMapping(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const { items, count } = await this.zoneService.getUserMapping(reqBody);
+        if (!count) {
+            response.success = false;
+            response.message = "Problem in getting sub item list";
+        }
+        else {
+            response.data = { items, count };
+        }
+        return response;
+    }
     async getDeliverySlots(reqBody) {
         let response = {
             data: {},
@@ -99,6 +131,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ZonesController.prototype, "addZone", null);
+__decorate([
+    (0, common_1.Post)('addUserMapping'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "addUserMapping", null);
+__decorate([
+    (0, common_1.Post)('getUserMapping'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "getUserMapping", null);
 __decorate([
     (0, common_1.Post)('getDeliverySlots'),
     __param(0, (0, common_1.Body)()),
