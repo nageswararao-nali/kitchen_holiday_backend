@@ -136,7 +136,8 @@ let OrdersService = class OrdersService {
                 env: {
                     OPENSSL_CONF: '/dev/null',
                 },
-            }
+            },
+            "phantomPath": "./node_modules/phantomjs-prebuild/bin/phantomjs",
         };
         let data = [];
         var template = './public/invoice.html';

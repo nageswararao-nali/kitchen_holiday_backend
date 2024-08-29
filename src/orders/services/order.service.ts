@@ -143,7 +143,8 @@ export class OrdersService {
         env: {
           OPENSSL_CONF: '/dev/null',
         },
-      }
+      },
+      "phantomPath": "./node_modules/phantomjs-prebuild/bin/phantomjs", 
     }
     let data =[]
     // //console.log(data)
