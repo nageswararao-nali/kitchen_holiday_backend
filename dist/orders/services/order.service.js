@@ -137,7 +137,7 @@ let OrdersService = class OrdersService {
                     OPENSSL_CONF: '/dev/null',
                 },
             },
-            "phantomPath": "./node_modules/phantomjs-prebuild/bin/phantomjs",
+            "phantomPath": "./node_modules/phantomjs-prebuilt/bin/phantomjs",
         };
         let data = [];
         var template = './public/invoice.html';
@@ -145,8 +145,9 @@ let OrdersService = class OrdersService {
         var html = fs.readFileSync(template, 'utf8');
         let pdfCreate = (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
             pdf.create(html, pdfOptions).toFile(pdf_path, function (err, res1) {
+                console.log("after pf");
                 if (err)
-                    return;
+                    return console.log(err);
                 resolve(pdf_path);
             });
         });

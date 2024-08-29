@@ -144,7 +144,7 @@ export class OrdersService {
           OPENSSL_CONF: '/dev/null',
         },
       },
-      "phantomPath": "./node_modules/phantomjs-prebuild/bin/phantomjs", 
+      "phantomPath": "./node_modules/phantomjs-prebuilt/bin/phantomjs", 
     }
     let data =[]
     // //console.log(data)
@@ -160,7 +160,8 @@ export class OrdersService {
     // //console.log(html)
     let pdfCreate =  (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
         pdf.create(html, pdfOptions).toFile(pdf_path, function(err, res1) {
-            if (err) return //console.log(err);
+          console.log("after pf")
+            if (err) return console.log(err);
             //console.log("res1"); // { filename: '/app/businesscard.pdf' }
             //console.log(res1); // { filename: '/app/businesscard.pdf' }
             // fs.existsSync(res1.filename)
