@@ -66,6 +66,9 @@ export class OrdersEntity {
   @Column({default: 0})
   mySubId: number;
 
+  @Column({nullable: true})
+  invoice: string;
+
   @CreateDateColumn()
   created_at: Date;
 }

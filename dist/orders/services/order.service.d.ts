@@ -6,6 +6,8 @@ import { MySubscriptionsEntity } from '../models/mysubscriptions.entity';
 import { SubscriptionsService } from './subscription.service';
 import { ZoneMappingEntity } from '../models/zoneMapping.entity';
 import { NotificationsEntity } from '../models/notifications.entity';
+import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 export declare class OrdersService {
     private orderModel;
     private mySubModel;
@@ -14,13 +16,16 @@ export declare class OrdersService {
     private userService;
     private itemSerivce;
     private subSerivce;
-    constructor(orderModel: Repository<OrdersEntity>, mySubModel: Repository<MySubscriptionsEntity>, zoneMapRepo: Repository<ZoneMappingEntity>, notiRepo: Repository<NotificationsEntity>, userService: UsersService, itemSerivce: ItemsService, subSerivce: SubscriptionsService);
+    private configService;
+    constructor(orderModel: Repository<OrdersEntity>, mySubModel: Repository<MySubscriptionsEntity>, zoneMapRepo: Repository<ZoneMappingEntity>, notiRepo: Repository<NotificationsEntity>, userService: UsersService, itemSerivce: ItemsService, subSerivce: SubscriptionsService, configService: ConfigService);
     findOne(id: number): Promise<OrdersEntity>;
     list(reqBody: any): Promise<any>;
     getOrder(reqBody: any): Promise<any>;
     addOrder(reqBody: any): Promise<any>;
     getOrderDates(startDate: any, noOrders: any, planDays: any): Promise<any>;
-    sendBulkInvoice(invoiceData: any): Promise<any>;
+    generatePDFfromHTML(): Promise<any>;
+    uploadS3(params: any): Promise<unknown>;
+    getS3(): S3;
     addUserOrder(reqBody: any): Promise<any>;
     updateOrderStatus(reqBody: any): Promise<any>;
     updateOrder(reqBody: any): Promise<any>;

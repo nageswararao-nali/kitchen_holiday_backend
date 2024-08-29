@@ -24,10 +24,12 @@ const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
 const subscription_service_1 = require("./subscription.service");
 const zoneMapping_entity_1 = require("../models/zoneMapping.entity");
 const notifications_entity_1 = require("../models/notifications.entity");
-const pdf = require("html-pdf");
+const puppeteer = require("puppeteer");
 const fs = require("fs");
+const aws_sdk_1 = require("aws-sdk");
+const config_1 = require("@nestjs/config");
 let OrdersService = class OrdersService {
-    constructor(orderModel, mySubModel, zoneMapRepo, notiRepo, userService, itemSerivce, subSerivce) {
+    constructor(orderModel, mySubModel, zoneMapRepo, notiRepo, userService, itemSerivce, subSerivce, configService) {
         this.orderModel = orderModel;
         this.mySubModel = mySubModel;
         this.zoneMapRepo = zoneMapRepo;
@@ -35,6 +37,7 @@ let OrdersService = class OrdersService {
         this.userService = userService;
         this.itemSerivce = itemSerivce;
         this.subSerivce = subSerivce;
+        this.configService = configService;
     }
     findOne(id) {
         return this.orderModel.findOneBy({ id });
@@ -130,29 +133,33 @@ let OrdersService = class OrdersService {
         }
         return orders;
     }
-    async sendBulkInvoice(invoiceData) {
-        const pdfOptions = {
-            childProcessOptions: {
-                env: {
-                    OPENSSL_CONF: '/dev/null',
-                },
-            },
-            "phantomPath": "./node_modules/phantomjs-prebuilt/bin/phantomjs",
-        };
-        let data = [];
+    async generatePDFfromHTML() {
         var template = './public/invoice.html';
         var pdf_path = './public/invoice.pdf';
         var html = fs.readFileSync(template, 'utf8');
-        let pdfCreate = (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
-            pdf.create(html, pdfOptions).toFile(pdf_path, function (err, res1) {
-                console.log("after pf");
-                if (err)
-                    return console.log(err);
-                resolve(pdf_path);
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+        await page.setContent(html);
+        await page.pdf({ path: pdf_path, format: 'A4' });
+        await browser.close();
+        return pdf_path;
+    }
+    async uploadS3(params) {
+        const s3 = this.getS3();
+        return new Promise((resolve, reject) => {
+            s3.upload(params, (err, data) => {
+                if (err) {
+                    reject(err.message);
+                }
+                resolve(data);
             });
         });
-        await pdfCreate(html, pdfOptions, pdf_path);
-        return pdf_path;
+    }
+    getS3() {
+        return new aws_sdk_1.S3({
+            accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+            secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
+        });
     }
     async addUserOrder(reqBody) {
         console.log("add order");
@@ -225,9 +232,17 @@ let OrdersService = class OrdersService {
                     };
                     await this.notiRepo.save(noti);
                 }
-                let invoicePath = await this.sendBulkInvoice({});
+                let invoicePath = await this.generatePDFfromHTML();
                 console.log("invoicePath");
                 console.log(invoicePath);
+                const inv_params = {
+                    Key: createdItem.id + '_invoice.pdf',
+                    Body: fs.createReadStream(invoicePath),
+                    Bucket: 'kh-invoices',
+                };
+                const trip_fileRes = await this.uploadS3(inv_params);
+                let invoiceLoc = trip_fileRes.Location;
+                await this.orderModel.update({ id: createdItem.id }, { invoice: invoiceLoc });
             }
         }
         else {
@@ -326,6 +341,7 @@ exports.OrdersService = OrdersService = __decorate([
         typeorm_2.Repository,
         users_service_1.UsersService,
         items_service_1.ItemsService,
-        subscription_service_1.SubscriptionsService])
+        subscription_service_1.SubscriptionsService,
+        config_1.ConfigService])
 ], OrdersService);
 //# sourceMappingURL=order.service.js.map

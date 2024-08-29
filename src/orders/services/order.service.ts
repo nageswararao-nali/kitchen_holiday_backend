@@ -12,8 +12,12 @@ import { MySubscriptionsEntity } from '../models/mysubscriptions.entity';
 import { SubscriptionsService } from './subscription.service';
 import { ZoneMappingEntity } from '../models/zoneMapping.entity';
 import { NotificationsEntity } from '../models/notifications.entity';
-import * as pdf from 'html-pdf'
+// import * as pdf from 'html-pdf'
+import * as  puppeteer from 'puppeteer';
+
 import * as fs from 'fs'
+import { S3 } from 'aws-sdk';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OrdersService {
@@ -28,7 +32,8 @@ export class OrdersService {
     private notiRepo: Repository<NotificationsEntity>,
     private userService: UsersService,
     private itemSerivce: ItemsService,
-    private subSerivce: SubscriptionsService
+    private subSerivce: SubscriptionsService,
+    private configService: ConfigService
   ) {}
 
   findOne(id: number): Promise<OrdersEntity> {
@@ -136,46 +141,77 @@ export class OrdersService {
         
   }
 
-  async sendBulkInvoice(invoiceData: any): Promise<any> {
-    
-    const pdfOptions: any = {
-      childProcessOptions: {
-        env: {
-          OPENSSL_CONF: '/dev/null',
-        },
-      },
-      "phantomPath": "./node_modules/phantomjs-prebuilt/bin/phantomjs", 
-    }
-    let data =[]
-    // //console.log(data)
-    // for await (let row of data.rows) {
-      // //console.log(row)
-          
+  async generatePDFfromHTML(): Promise<any> {
     var template = './public/invoice.html'
     var pdf_path = './public/invoice.pdf'
     // //console.log(template)
     var html = fs.readFileSync(template, 'utf8');
-    
-    
-    // //console.log(html)
-    let pdfCreate =  (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
-        pdf.create(html, pdfOptions).toFile(pdf_path, function(err, res1) {
-          console.log("after pf")
-            if (err) return console.log(err);
-            //console.log("res1"); // { filename: '/app/businesscard.pdf' }
-            //console.log(res1); // { filename: '/app/businesscard.pdf' }
-            // fs.existsSync(res1.filename)
-            
-            resolve(pdf_path)
-            
-            
-            });
-    })
-    await pdfCreate(html, pdfOptions, pdf_path)
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(html);
+    // console.log(html)
+    await page.pdf({ path: pdf_path, format: 'A4' });
+    await browser.close();
     return pdf_path
-    
-}
+  }
 
+//   async sendBulkInvoice(invoiceData: any): Promise<any> {
+    
+//     const pdfOptions: any = {
+//       childProcessOptions: {
+//         env: {
+//           OPENSSL_CONF: '/dev/null',
+//         },
+//       },
+//       "phantomPath": "./node_modules/phantomjs-prebuilt/bin/phantomjs", 
+//     }
+//     let data =[]
+//     // //console.log(data)
+//     // for await (let row of data.rows) {
+//       // //console.log(row)
+          
+//     var template = './public/invoice.html'
+//     var pdf_path = './public/invoice.pdf'
+//     // //console.log(template)
+//     var html = fs.readFileSync(template, 'utf8');
+    
+    
+//     // //console.log(html)
+//     let pdfCreate =  (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
+//         pdf.create(html, pdfOptions).toFile(pdf_path, function(err, res1) {
+//           console.log("after pf")
+//             if (err) return console.log(err);
+//             //console.log("res1"); // { filename: '/app/businesscard.pdf' }
+//             //console.log(res1); // { filename: '/app/businesscard.pdf' }
+//             // fs.existsSync(res1.filename)
+            
+//             resolve(pdf_path)
+            
+            
+//             });
+//     })
+//     await pdfCreate(html, pdfOptions, pdf_path)
+//     return pdf_path
+    
+// }
+  async uploadS3(params) {
+    const s3 = this.getS3();
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+        if (err) {
+            reject(err.message);
+        }
+        resolve(data);
+        });
+    });
+  }
+
+  getS3() {
+    return new S3({
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID'),
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')
+    });
+  }
   async addUserOrder(reqBody: any): Promise<any> {
     console.log("add order")
     let createdItem: any = {}
@@ -248,9 +284,17 @@ export class OrdersService {
           }
           await this.notiRepo.save(noti)
         }
-        let invoicePath = await this.sendBulkInvoice({})
+        let invoicePath = await this.generatePDFfromHTML()
         console.log("invoicePath")
         console.log(invoicePath)
+        const inv_params = {
+          Key: createdItem.id+'_invoice.pdf',
+          Body: fs.createReadStream(invoicePath),
+          Bucket: 'kh-invoices',
+        };
+        const trip_fileRes: any = await this.uploadS3(inv_params)
+        let invoiceLoc = trip_fileRes.Location
+        await this.orderModel.update({id: createdItem.id}, {invoice: invoiceLoc})
       }
       
     } else {
