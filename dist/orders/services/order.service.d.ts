@@ -20,6 +20,7 @@ export declare class OrdersService {
     getOrder(reqBody: any): Promise<any>;
     addOrder(reqBody: any): Promise<any>;
     getOrderDates(startDate: any, noOrders: any, planDays: any): Promise<any>;
+    sendBulkInvoice(invoiceData: any): Promise<any>;
     addUserOrder(reqBody: any): Promise<any>;
     updateOrderStatus(reqBody: any): Promise<any>;
     updateOrder(reqBody: any): Promise<any>;

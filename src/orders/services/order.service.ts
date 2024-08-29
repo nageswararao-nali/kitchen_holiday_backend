@@ -12,6 +12,8 @@ import { MySubscriptionsEntity } from '../models/mysubscriptions.entity';
 import { SubscriptionsService } from './subscription.service';
 import { ZoneMappingEntity } from '../models/zoneMapping.entity';
 import { NotificationsEntity } from '../models/notifications.entity';
+import * as pdf from 'html-pdf'
+import * as fs from 'fs'
 
 @Injectable()
 export class OrdersService {
@@ -134,6 +136,44 @@ export class OrdersService {
         
   }
 
+  async sendBulkInvoice(invoiceData: any): Promise<any> {
+    
+    const pdfOptions: any = {
+      childProcessOptions: {
+        env: {
+          OPENSSL_CONF: '/dev/null',
+        },
+      }
+    }
+    let data =[]
+    // //console.log(data)
+    // for await (let row of data.rows) {
+      // //console.log(row)
+          
+    var template = './public/invoice.html'
+    var pdf_path = './public/invoice.pdf'
+    // //console.log(template)
+    var html = fs.readFileSync(template, 'utf8');
+    
+    
+    // //console.log(html)
+    let pdfCreate =  (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
+        pdf.create(html, pdfOptions).toFile(pdf_path, function(err, res1) {
+            if (err) return //console.log(err);
+            //console.log("res1"); // { filename: '/app/businesscard.pdf' }
+            //console.log(res1); // { filename: '/app/businesscard.pdf' }
+            // fs.existsSync(res1.filename)
+            
+            resolve(pdf_path)
+            
+            
+            });
+    })
+    await pdfCreate(html, pdfOptions, pdf_path)
+    return pdf_path
+    
+}
+
   async addUserOrder(reqBody: any): Promise<any> {
     console.log("add order")
     let createdItem: any = {}
@@ -206,6 +246,9 @@ export class OrdersService {
           }
           await this.notiRepo.save(noti)
         }
+        let invoicePath = await this.sendBulkInvoice({})
+        console.log("invoicePath")
+        console.log(invoicePath)
       }
       
     } else {

@@ -1,0 +1,158 @@
+<html lang="en"><head>
+<title>Home</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="icon" type="image/png" href="images/icons/favicon.png">
+
+<style>
+        body{margin: 0;padding: 0;font-family: sans-serif;}
+        .header{display: inline-block;width: 100%;max-height: 180px;overflow: hidden;}
+        .header_wraper{position: absolute;top: 0;left: 0;width: 100%;}
+        .header_inn,.footer_cnt{display: flex;align-items: center;}
+        .footer_cnt{justify-content: space-between;text-align: right;}
+        .header_inn img{width: 100%;max-width: 180px;}
+        h1{margin:auto;font-size: 42px;}
+        .container {max-width: 1200px;margin: auto;padding: 0 15px;}
+        .header_top{display: flex;justify-content: space-between;margin-top: 20px;font-size: 22px;line-height: 32px;}
+        .footer_cnt span{font-size: 22px}
+       .footer_cnt .lft_cnt{flex: 0.5}
+       .footer_cnt .ryt_cnt{flex: 1;    display: flex;
+    flex-direction: column;
+    align-items: end;}
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 130px;margin-bottom: 100px; border: 1px solid #faf7f2
+        }
+
+        td, th {
+/*          border: 1px solid #faf7f2;*/
+          text-align: left;
+          padding: 16px;
+        }
+
+        tr:nth-child(even) {
+          background-color: #faf7f2;
+        }
+        th{background: #27963c;color: #fff;}
+        .total{padding: 10px 15px;border: 2px solid #c3b296;border-radius: 10px;display: inline-block;}
+        .d-flex{display: flex;justify-content: space-between;}
+
+         @media (min-width: 576px) {
+        .container, .container-lg, .container-md, .container-sm, .container-xl {max-width: 540px;}
+        }
+       @media (min-width: 768px) {
+        .container, .container-lg, .container-md, .container-sm, .container-xl {max-width: 720px;}
+        }
+        @media (min-width: 992px) {
+        .container, .container-lg, .container-md, .container-sm, .container-xl {max-width: 960px;}
+        }
+        
+        @media (min-width: 1200px) {
+        .container, .container-lg, .container-md, .container-sm, .container-xl {max-width: 1140px;}
+        }
+
+</style>
+
+</head>
+<body >
+
+<header class="header">
+        <img src="images/banner_bg4.png" class="img-fluid">
+        <div class="header_wraper">
+                <div class="container">
+                        <div class="header_inn">
+                                <img src="images/logo_f.png">
+                                <h1>Invoice</h1>
+                                <span style="width: 200px;"></span>
+                        </div>
+                </div>
+        </div>
+</header>
+<div class="container">
+        <div class="header_top">
+                <div class="lft_cnt">
+                        <span><b>Invoice to:</b> David john</span><br>
+                        <span>Spm At 643, Francisco...</span>
+                </div>
+                <div class="ryt_cnt">
+                        <span><b>Invoice:</b> 01980</span><br>
+                        <span><b>Date:</b> 21/08/2024</span>
+                </div>
+        </div>
+        <table>
+          <tr>
+            <th>SL</th>
+            <th>Item Description</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>dolor sit amet</td>
+            <td>$320</td>
+            <td>2</td>
+            <td>$640</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Francisco Chang</td>
+            <td>$200</td>
+            <td>1</td>
+            <td>$200</td>
+          </tr>
+           <tr>
+            <td>3</td>
+            <td>dolor sit amet</td>
+            <td>$320</td>
+            <td>2</td>
+            <td>$640</td>
+          </tr>
+         <tr>
+            <td>3</td>
+            <td>Francisco Chang</td>
+            <td>$200</td>
+            <td>1</td>
+            <td>$200</td>
+          </tr>
+         
+         <tr>
+            <td>4</td>
+            <td>dolor sit amet</td>
+            <td>$320</td>
+            <td>2</td>
+            <td>$640</td>
+          </tr>
+           <tr>
+            <td>5</td>
+            <td>Francisco Chang</td>
+            <td>$200</td>
+            <td>1</td>
+            <td>$200</td>
+          </tr>
+        </table>
+
+        <div class="container">
+                <div class="footer_cnt">
+                        <div class="lft_cnt">
+                                <span>Thank you!</span>
+                                <p>Payment info:<br>Account# : 123456789</p>
+                                <p>Account Name: <br> <b>Bank details:</b>Add your details</p>
+                                <hr style="background: #faf7f2;height: 1px;width: 100%;">
+                                <p>Terms & Conditions</p>
+                                <p>Humans review some saved chats to improve Google AI. To stop this for future chats, turn off Gemini Apps Activity. If this setting is on, don't enter info you wouldn’t want reviewed or used</p>
+                        </div>
+                        <div class="ryt_cnt">
+                                <div style="text-align: center;">
+                                <div class="d-flex" ><p>Sub Total:</p>  <p>$2250</p></div>
+                                <div class="d-flex"><p>Tax:</p>  <p>0.00</p></div>
+                                <span class="total">Total : $650</span>
+                        </div>
+                        </div>
+                </div>
+        </div>
+</div>
+</body></html>

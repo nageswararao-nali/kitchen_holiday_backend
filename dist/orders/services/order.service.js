@@ -24,6 +24,8 @@ const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
 const subscription_service_1 = require("./subscription.service");
 const zoneMapping_entity_1 = require("../models/zoneMapping.entity");
 const notifications_entity_1 = require("../models/notifications.entity");
+const pdf = require("html-pdf");
+const fs = require("fs");
 let OrdersService = class OrdersService {
     constructor(orderModel, mySubModel, zoneMapRepo, notiRepo, userService, itemSerivce, subSerivce) {
         this.orderModel = orderModel;
@@ -128,6 +130,28 @@ let OrdersService = class OrdersService {
         }
         return orders;
     }
+    async sendBulkInvoice(invoiceData) {
+        const pdfOptions = {
+            childProcessOptions: {
+                env: {
+                    OPENSSL_CONF: '/dev/null',
+                },
+            }
+        };
+        let data = [];
+        var template = './public/invoice.html';
+        var pdf_path = './public/invoice.pdf';
+        var html = fs.readFileSync(template, 'utf8');
+        let pdfCreate = (html, pdfOptions, pdf_path) => new Promise((resolve, reject) => {
+            pdf.create(html, pdfOptions).toFile(pdf_path, function (err, res1) {
+                if (err)
+                    return;
+                resolve(pdf_path);
+            });
+        });
+        await pdfCreate(html, pdfOptions, pdf_path);
+        return pdf_path;
+    }
     async addUserOrder(reqBody) {
         console.log("add order");
         let createdItem = {};
@@ -199,6 +223,9 @@ let OrdersService = class OrdersService {
                     };
                     await this.notiRepo.save(noti);
                 }
+                let invoicePath = await this.sendBulkInvoice({});
+                console.log("invoicePath");
+                console.log(invoicePath);
             }
         }
         else {
