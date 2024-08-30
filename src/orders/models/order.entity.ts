@@ -58,6 +58,9 @@ export class OrdersEntity {
   deliveryParterId: number;
 
   @Column({nullable: true})
+  deliveryParterName: string;
+
+  @Column({nullable: true})
   latitude: string;
 
   @Column({nullable: true})

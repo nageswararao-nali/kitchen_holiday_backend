@@ -42,6 +42,9 @@ export class MySubscriptionsEntity {
   @Column({nullable: true})
   selectedPlan: string;
 
+  @Column({default: true})
+  isActive: boolean;
+
   @CreateDateColumn()
   created_at: Date;
 }

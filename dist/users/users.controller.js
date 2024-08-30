@@ -45,6 +45,26 @@ let UsersController = class UsersController {
         }
         return response;
     }
+    async getUser(reqBody) {
+        let response = {
+            success: true,
+            message: 'User Registered',
+            data: {}
+        };
+        console.log("welocme");
+        console.log(reqBody);
+        let user = await this.usersService.findOneById(reqBody.userId);
+        console.log("after");
+        console.log(user);
+        if (!user) {
+            response.success = false;
+            response.message = "Problem in getting users list the user";
+        }
+        else {
+            response.data = user;
+        }
+        return response;
+    }
     async totalUsers(reqBody) {
         let response = {
             data: {},
@@ -189,6 +209,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "addUser", null);
+__decorate([
+    (0, common_1.Post)('getUser'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUser", null);
 __decorate([
     (0, common_1.Post)('totalUsers'),
     __param(0, (0, common_1.Body)()),

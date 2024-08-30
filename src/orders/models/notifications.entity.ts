@@ -6,7 +6,7 @@ export class NotificationsEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable: true})
   userId: string;
 
   @Column({default: false})
@@ -14,6 +14,9 @@ export class NotificationsEntity {
 
   @Column({nullable: true})
   content: string;
+
+  @Column({default: false})
+  isForKitchen: boolean;
 
   @CreateDateColumn()
   created_at: Date;

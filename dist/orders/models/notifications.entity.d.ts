@@ -3,6 +3,7 @@ export declare class NotificationsEntity {
     userId: string;
     isViewed: boolean;
     content: string;
+    isForKitchen: boolean;
     created_at: Date;
     updated_at: Date;
 }

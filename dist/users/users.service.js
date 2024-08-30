@@ -53,7 +53,6 @@ let UsersService = class UsersService {
     async login(username, password, userType) {
         const user = await this.usersRepo.findOneBy({ username });
         console.log(user);
-        console.log(user.password, password);
         if (user && user.password === password && user.user_type == userType) {
             return true;
         }

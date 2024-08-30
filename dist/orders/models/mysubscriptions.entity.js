@@ -67,6 +67,10 @@ __decorate([
     __metadata("design:type", String)
 ], MySubscriptionsEntity.prototype, "selectedPlan", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: true }),
+    __metadata("design:type", Boolean)
+], MySubscriptionsEntity.prototype, "isActive", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], MySubscriptionsEntity.prototype, "created_at", void 0);

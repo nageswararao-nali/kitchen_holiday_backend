@@ -245,7 +245,12 @@ export class OrdersService {
         subItems[subItemIdData.itemId] = subItems[subItemIdData.itemId]+subItemIdData.quantity
       }
     }
+    let deliveryBoy: any = {}
     let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
+    if(zoneMapping && zoneMapping.length) {
+      deliveryBoy = await this.userService.findOneById(parseInt(zoneMapping[0].userId))
+    }
+    
     if(reqBody.startDate) {
       let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
       console.log(orderDates)
@@ -287,7 +292,8 @@ export class OrdersService {
           longitude: reqBody.longitude,
           deliverySlot: reqBody.deliverySlot,
           mySubId: muSub.id,
-          deliveryParterId: (zoneMapping && zoneMapping.length) ? parseInt(zoneMapping[0].userId) : 0
+          deliveryParterId: deliveryBoy.id ? deliveryBoy.id : 0,
+          deliveryParterName: deliveryBoy.id ? deliveryBoy.name : ''
         }
         console.log(order)
         createdItem = await this.orderModel.save(order);
@@ -296,10 +302,15 @@ export class OrdersService {
             userId: zoneMapping[0].userId,
             content: 'Order Assigned #'+createdItem.id,
             created_at: new Date()
-
           }
           await this.notiRepo.save(noti)
         }
+        let noti = {
+          isForKitchen: true,
+          content: 'Order Assigned #'+createdItem.id,
+          created_at: new Date()
+        }
+        await this.notiRepo.save(noti)
         let invoicePath = await this.generatePDFfromHTML(createdItem)
         console.log("invoicePath")
         console.log(invoicePath)
@@ -337,7 +348,9 @@ export class OrdersService {
         subscriptionId: 0,
         latitude: reqBody.latitude,
         longitude: reqBody.longitude,
-        deliverySlot: reqBody.deliverySlot
+        deliverySlot: reqBody.deliverySlot,
+        deliveryParterId: deliveryBoy.id ? deliveryBoy.id : 0,
+        deliveryParterName: deliveryBoy.id ? deliveryBoy.name : ''
       }
       console.log(order)
       createdItem = await this.orderModel.save(order);
@@ -350,6 +363,12 @@ export class OrdersService {
         }
         await this.notiRepo.save(noti)
       }
+      let noti = {
+        isForKitchen: true,
+        content: 'Order Assigned #'+createdItem.id,
+        created_at: new Date()
+      }
+      await this.notiRepo.save(noti)
       let invoicePath = await this.generatePDFfromHTML(createdItem)
       console.log("invoicePath")
       console.log(invoicePath)
@@ -382,7 +401,7 @@ export class OrdersService {
   async updateMySubscription(reqBody: any): Promise<any> {
     console.log("add order")
     let mySub = await this.mySubModel.findOneBy({id: reqBody.subId})
-    let createdItem = {}
+    let createdItem: any = {}
     
     if(reqBody.mySubLastDate) {
       let mySubOrder = await this.orderModel.findOneBy({mySubId: reqBody.subId})
@@ -396,6 +415,11 @@ export class OrdersService {
         if(index !== 1) {
           oldOrderDates.splice(index, 1);
         }
+      }
+      let deliveryBoy: any = {}
+      let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
+      if(zoneMapping && zoneMapping.length) {
+        deliveryBoy = await this.userService.findOneById(parseInt(zoneMapping[0].userId))
       }
       for(let orderDate of orderDates) {
         let order = {
@@ -416,11 +440,43 @@ export class OrdersService {
           subscriptionId: mySubOrder.subscriptionId,
           latitude: mySubOrder.latitude,
           longitude: mySubOrder.longitude,
-          deliverySlot: mySubOrder.deliverySlot
+          deliverySlot: mySubOrder.deliverySlot,
+          deliveryParterId: deliveryBoy.id ? deliveryBoy.id : 0,
+          deliveryParterName: deliveryBoy.id ? deliveryBoy.name : ''
         }
         console.log(order)
         createdItem = await this.orderModel.save(order);
         oldOrderDates.push(orderDate)
+
+        if(zoneMapping && zoneMapping.length) {
+          let noti = {
+            userId: zoneMapping[0].userId,
+            content: 'Order Assigned #'+createdItem.id,
+            created_at: new Date()
+  
+          }
+          await this.notiRepo.save(noti)
+        }
+        let noti = {
+          isForKitchen: true,
+          content: 'Order Assigned #'+createdItem.id,
+          created_at: new Date()
+        }
+        await this.notiRepo.save(noti)
+        let invoicePath = await this.generatePDFfromHTML(createdItem)
+        console.log("invoicePath")
+        console.log(invoicePath)
+        const inv_params = {
+          Key: createdItem.id+'_invoice.pdf',
+          Body: fs.createReadStream(invoicePath),
+          Bucket: 'kh-invoices',
+          ContentDisposition:"inline",
+          ContentType:"application/pdf"
+        };
+        const trip_fileRes: any = await this.uploadS3(inv_params)
+        let invoiceLoc = trip_fileRes.Location
+        await this.orderModel.update({id: createdItem.id}, {invoice: invoiceLoc})
+        fs.unlinkSync(invoicePath);
       }
       
       let dd = await this.mySubModel.update({id: reqBody.subId}, {orderDates: JSON.stringify(oldOrderDates)})
@@ -428,6 +484,14 @@ export class OrdersService {
     }
     
     return createdItem
+  }
+  
+  async deleteMySubscription(reqBody: any): Promise<any> {
+    let mySubOrder = await this.orderModel.delete({mySubId: reqBody.subId, status: 'new'})
+    let dd = await this.mySubModel.update({id: reqBody.subId}, {isActive: false})
+    console.log(dd)
+    
+    return dd
   }
   
   

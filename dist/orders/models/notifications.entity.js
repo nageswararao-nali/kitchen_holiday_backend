@@ -19,7 +19,7 @@ __decorate([
     __metadata("design:type", Number)
 ], NotificationsEntity.prototype, "id", void 0);
 __decorate([
-    (0, typeorm_1.Column)(),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], NotificationsEntity.prototype, "userId", void 0);
 __decorate([
@@ -30,6 +30,10 @@ __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], NotificationsEntity.prototype, "content", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], NotificationsEntity.prototype, "isForKitchen", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

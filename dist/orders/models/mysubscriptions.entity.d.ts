@@ -12,5 +12,6 @@ export declare class MySubscriptionsEntity {
     orderDates: string;
     quantity: number;
     selectedPlan: string;
+    isActive: boolean;
     created_at: Date;
 }

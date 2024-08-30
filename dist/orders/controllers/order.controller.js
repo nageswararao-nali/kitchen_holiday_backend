@@ -131,6 +131,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async deleteMySubscription(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const sub = await this.orderService.deleteMySubscription(reqBody);
+        if (!sub) {
+            response.success = false;
+            response.message = "Problem in getting subscriptions list the user";
+        }
+        else {
+            response.data = sub;
+        }
+        return response;
+    }
     async getOrderDates(reqBody) {
         let response = {
             data: {},
@@ -198,6 +214,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "updateMySubscription", null);
+__decorate([
+    (0, common_1.Post)('deleteMySubscription'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "deleteMySubscription", null);
 __decorate([
     (0, common_1.Post)('getOrderDates'),
     __param(0, (0, common_1.Body)()),

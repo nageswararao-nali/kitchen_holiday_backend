@@ -58,6 +58,7 @@ let SubscriptionsService = class SubscriptionsService {
         if (reqBody.userId) {
             whereCon['userId'] = reqBody.userId;
         }
+        whereCon['isActive'] = true;
         const [items, count] = await this.mySubRepo.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
         return { items, count };
     }

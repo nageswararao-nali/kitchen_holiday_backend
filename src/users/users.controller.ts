@@ -36,6 +36,27 @@ export class UsersController {
     return response
   }
 
+  @Post('getUser')
+  async getUser(@Body() reqBody: any) {
+    let response = {
+      success: true,
+      message: 'User Registered',
+      data: {}
+    }
+    console.log("welocme")
+    console.log(reqBody)
+    let user = await this.usersService.findOneById(reqBody.userId);
+    console.log("after")
+    console.log(user)
+    if(!user) {
+      response.success = false;
+      response.message = "Problem in getting users list the user";
+  } else {
+    response.data = user
+  }
+    return response
+  }
+
   @Post('totalUsers')
   async totalUsers(@Body() reqBody: any) {
     let response = {

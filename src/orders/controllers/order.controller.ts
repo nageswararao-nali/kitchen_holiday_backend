@@ -133,6 +133,25 @@ export class OrdersController {
     return response
   }
 
+  @Post('deleteMySubscription')
+  async deleteMySubscription(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const sub = await this.orderService.deleteMySubscription(reqBody)
+    if(!sub) {
+        response.success = false;
+        response.message = "Problem in getting subscriptions list the user";
+    } else {
+      response.data = sub
+    }
+    
+    return response
+  }
+  
+
   @Post('getOrderDates')
   async getOrderDates(@Body() reqBody: any) {
     let response = {

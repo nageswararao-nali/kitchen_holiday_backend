@@ -7,6 +7,11 @@ export declare class UsersController {
         success: boolean;
         message: string;
     }>;
+    getUser(reqBody: any): Promise<{
+        success: boolean;
+        message: string;
+        data: {};
+    }>;
     totalUsers(reqBody: any): Promise<{
         data: {};
         success: boolean;
