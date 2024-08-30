@@ -143,5 +143,13 @@ export class ItemsService {
     return {items, count};
   }
 
+  async deleteItem(reqBody: any): Promise<any> {
+    const item = await this.itemModel.delete({id: reqBody.id});
+    return item;
+  }
+  async deleteSubItem(reqBody: any): Promise<any> {
+    const item = await this.subItemModel.delete({id: reqBody.id});
+    return item;
+  }
   
 }

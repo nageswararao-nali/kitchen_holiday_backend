@@ -61,6 +61,22 @@ export class SubscriptionsController {
     
     return response
   }
-  
+
+  @Post('deleteSubscription')
+  async deleteSubscription(@Body() reqBody: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const order = await this.subscriptionService.deleteSubscription(reqBody)
+      if (!order) {
+          response.success = false;
+          response.message = "problem in adding order";
+      } else {
+          response.data = order
+      }
+      return response
+  }
   
 }

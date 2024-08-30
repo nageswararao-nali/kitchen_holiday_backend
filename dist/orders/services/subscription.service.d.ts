@@ -10,4 +10,5 @@ export declare class SubscriptionsService {
     getSubscription(reqBody: any): Promise<any>;
     getMySubscriptions(reqBody: any): Promise<any>;
     addSubscription(reqBody: any): Promise<any>;
+    deleteSubscription(reqBody: any): Promise<any>;
 }

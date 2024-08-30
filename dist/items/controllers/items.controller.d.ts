@@ -42,4 +42,14 @@ export declare class ItemsController {
         success: boolean;
         message: string;
     }>;
+    deleteSubItem(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
+    deleteItem(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
 }

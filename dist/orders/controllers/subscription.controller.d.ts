@@ -17,4 +17,9 @@ export declare class SubscriptionsController {
         success: boolean;
         message: string;
     }>;
+    deleteSubscription(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
 }

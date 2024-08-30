@@ -74,6 +74,10 @@ let SubscriptionsService = class SubscriptionsService {
         const createdItem = await this.subRepo.save(subscription);
         return createdItem;
     }
+    async deleteSubscription(reqBody) {
+        const createdItem = await this.subRepo.delete({ id: reqBody.id });
+        return createdItem;
+    }
 };
 exports.SubscriptionsService = SubscriptionsService;
 exports.SubscriptionsService = SubscriptionsService = __decorate([

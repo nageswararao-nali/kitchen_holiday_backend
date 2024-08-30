@@ -22,4 +22,6 @@ export declare class ItemsService {
     addSubItem(file: any, reqBody: any): Promise<any>;
     addItemMapping(reqBody: any): Promise<any>;
     getItemMappings(reqBody: any): Promise<any>;
+    deleteItem(reqBody: any): Promise<any>;
+    deleteSubItem(reqBody: any): Promise<any>;
 }

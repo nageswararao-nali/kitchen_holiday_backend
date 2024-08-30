@@ -75,4 +75,10 @@ export class SubscriptionsService {
     return createdItem;
   }  
 
+  async deleteSubscription(reqBody: any): Promise<any> {
+    const createdItem = await this.subRepo.delete({id: reqBody.id});
+    return createdItem;
+  } 
+  
+
 }

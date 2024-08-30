@@ -157,4 +157,39 @@ export class ItemsController {
     return response
   }
 
+  @Post('deleteSubItem')
+  async deleteSubItem(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Item found'
+    }
+    const item = await this.itemsService.deleteSubItem(reqBody)
+    if(!item) {
+        response.success = false;
+        response.message = "Problem in getting item";
+    } else {
+      response.data = item
+    }
+    
+    return response
+  }
+  @Post('deleteItem')
+  async deleteItem(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Item found'
+    }
+    const item = await this.itemsService.deleteItem(reqBody)
+    if(!item) {
+        response.success = false;
+        response.message = "Problem in getting item";
+    } else {
+      response.data = item
+    }
+    
+    return response
+  }
+
 }

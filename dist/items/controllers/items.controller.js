@@ -148,6 +148,38 @@ let ItemsController = class ItemsController {
         }
         return response;
     }
+    async deleteSubItem(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Item found'
+        };
+        const item = await this.itemsService.deleteSubItem(reqBody);
+        if (!item) {
+            response.success = false;
+            response.message = "Problem in getting item";
+        }
+        else {
+            response.data = item;
+        }
+        return response;
+    }
+    async deleteItem(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Item found'
+        };
+        const item = await this.itemsService.deleteItem(reqBody);
+        if (!item) {
+            response.success = false;
+            response.message = "Problem in getting item";
+        }
+        else {
+            response.data = item;
+        }
+        return response;
+    }
 };
 exports.ItemsController = ItemsController;
 __decorate([
@@ -210,6 +242,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ItemsController.prototype, "getItemMappings", null);
+__decorate([
+    (0, common_1.Post)('deleteSubItem'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ItemsController.prototype, "deleteSubItem", null);
+__decorate([
+    (0, common_1.Post)('deleteItem'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ItemsController.prototype, "deleteItem", null);
 exports.ItemsController = ItemsController = __decorate([
     (0, common_1.Controller)('items'),
     __metadata("design:paramtypes", [items_service_1.ItemsService])

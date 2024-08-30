@@ -67,6 +67,22 @@ let SubscriptionsController = class SubscriptionsController {
         }
         return response;
     }
+    async deleteSubscription(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.subscriptionService.deleteSubscription(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in adding order";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
 };
 exports.SubscriptionsController = SubscriptionsController;
 __decorate([
@@ -90,6 +106,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SubscriptionsController.prototype, "getMySubscriptions", null);
+__decorate([
+    (0, common_1.Post)('deleteSubscription'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SubscriptionsController.prototype, "deleteSubscription", null);
 exports.SubscriptionsController = SubscriptionsController = __decorate([
     (0, common_1.Controller)('subscriptions'),
     __metadata("design:paramtypes", [subscription_service_1.SubscriptionsService])

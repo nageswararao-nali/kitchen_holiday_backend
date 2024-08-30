@@ -130,6 +130,14 @@ let ItemsService = class ItemsService {
         const [items, count] = await this.itemMappingModel.findAndCount({ where: { itemId: reqBody.itemId } });
         return { items, count };
     }
+    async deleteItem(reqBody) {
+        const item = await this.itemModel.delete({ id: reqBody.id });
+        return item;
+    }
+    async deleteSubItem(reqBody) {
+        const item = await this.subItemModel.delete({ id: reqBody.id });
+        return item;
+    }
 };
 exports.ItemsService = ItemsService;
 exports.ItemsService = ItemsService = __decorate([
