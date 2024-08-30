@@ -23,7 +23,7 @@ export declare class OrdersService {
     getOrder(reqBody: any): Promise<any>;
     addOrder(reqBody: any): Promise<any>;
     getOrderDates(startDate: any, noOrders: any, planDays: any): Promise<any>;
-    generatePDFfromHTML(): Promise<any>;
+    generatePDFfromHTML(order: any): Promise<any>;
     uploadS3(params: any): Promise<unknown>;
     getS3(): S3;
     addUserOrder(reqBody: any): Promise<any>;

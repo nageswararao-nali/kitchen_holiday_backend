@@ -31,6 +31,9 @@ export class OrdersEntity {
   quantity: number;
 
   @Column({nullable: true})
+  price: number;
+
+  @Column({nullable: true})
   subItems: string;
 
   @Column({nullable: true})

@@ -52,6 +52,10 @@ __decorate([
 ], OrdersEntity.prototype, "quantity", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], OrdersEntity.prototype, "price", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], OrdersEntity.prototype, "subItems", void 0);
 __decorate([

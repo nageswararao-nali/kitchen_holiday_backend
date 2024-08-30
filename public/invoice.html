@@ -74,12 +74,12 @@
 <div class="container">
         <div class="header_top">
                 <div class="lft_cnt">
-                        <span><b>Invoice to:</b> David john</span><br>
-                        <span>Spm At 643, Francisco...</span>
+                        <span><b>Invoice to:</b> {{customerName}}</span><br>
+                        <span>{{customerAddress}}</span>
                 </div>
                 <div class="ryt_cnt">
-                        <span><b>Invoice:</b> 01980</span><br>
-                        <span><b>Date:</b> 21/08/2024</span>
+                        <span><b>Invoice:</b> {{invoiceNumber}}</span><br>
+                        <span><b>Date:</b> {{invoiceDate}}</span>
                 </div>
         </div>
         <table>
@@ -91,47 +91,11 @@
             <th>Total</th>
           </tr>
           <tr>
-            <td>1</td>
-            <td>dolor sit amet</td>
-            <td>$320</td>
-            <td>2</td>
-            <td>$640</td>
-          </tr>
-          <tr>
-            <td>2</td>
-            <td>Francisco Chang</td>
-            <td>$200</td>
-            <td>1</td>
-            <td>$200</td>
-          </tr>
-           <tr>
-            <td>3</td>
-            <td>dolor sit amet</td>
-            <td>$320</td>
-            <td>2</td>
-            <td>$640</td>
-          </tr>
-         <tr>
-            <td>3</td>
-            <td>Francisco Chang</td>
-            <td>$200</td>
-            <td>1</td>
-            <td>$200</td>
-          </tr>
-         
-         <tr>
-            <td>4</td>
-            <td>dolor sit amet</td>
-            <td>$320</td>
-            <td>2</td>
-            <td>$640</td>
-          </tr>
-           <tr>
-            <td>5</td>
-            <td>Francisco Chang</td>
-            <td>$200</td>
-            <td>1</td>
-            <td>$200</td>
+            <td>{{index}}</td>
+            <td>{{itemName}}</td>
+            <td>${{price}}</td>
+            <td>{{quantity}}</td>
+            <td>${{totalPrice}}</td>
           </tr>
         </table>
 
@@ -147,9 +111,9 @@
                         </div>
                         <div class="ryt_cnt">
                                 <div style="text-align: center;">
-                                <div class="d-flex" ><p>Sub Total:</p>  <p>$2250</p></div>
+                                <div class="d-flex" ><p>Sub Total:</p>  <p>${{subTotal}}</p></div>
                                 <div class="d-flex"><p>Tax:</p>  <p>0.00</p></div>
-                                <span class="total">Total : $650</span>
+                                <span class="total">Total : ${{totalAmount}}</span>
                         </div>
                         </div>
                 </div>

@@ -8,6 +8,7 @@ export declare class OrdersEntity {
     itemId: number;
     totalAmount: number;
     quantity: number;
+    price: number;
     subItems: string;
     itemName: string;
     orderDate: string;

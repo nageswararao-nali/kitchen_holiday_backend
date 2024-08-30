@@ -133,10 +133,21 @@ let OrdersService = class OrdersService {
         }
         return orders;
     }
-    async generatePDFfromHTML() {
+    async generatePDFfromHTML(order) {
         var template = './public/invoice.html';
         var pdf_path = './public/invoice.pdf';
         var html = fs.readFileSync(template, 'utf8');
+        html = html.replace('{{index}}', '1');
+        html = html.replace('{{itemName}}', order.itemName);
+        html = html.replace('{{price}}', order.price);
+        html = html.replace('{{quantity}}', order.quantity);
+        html = html.replace('{{totalPrice}}', order.totalAmount);
+        html = html.replace('{{subTotal}}', order.totalAmount);
+        html = html.replace('{{totalAmount}}', order.totalAmount);
+        html = html.replace('{{customerName}}', order.customerName);
+        html = html.replace('{{invoiceNumber}}', order.id);
+        html = html.replace('{{invoiceDate}}', order.orderDate);
+        html = html.replace('{{customerAddress}}', order.address);
         const browser = await puppeteer.launch({
             executablePath: '/usr/bin/chromium-browser'
         });
@@ -208,6 +219,7 @@ let OrdersService = class OrdersService {
                     itemName: reqBody.itemName,
                     subItems: JSON.stringify(subItems),
                     quantity: reqBody.quantity,
+                    price: reqBody.price,
                     addressId: reqBody.addressId,
                     totalAmount: reqBody.totalAmount,
                     customerName: reqBody.customerName,
@@ -234,7 +246,7 @@ let OrdersService = class OrdersService {
                     };
                     await this.notiRepo.save(noti);
                 }
-                let invoicePath = await this.generatePDFfromHTML();
+                let invoicePath = await this.generatePDFfromHTML(createdItem);
                 console.log("invoicePath");
                 console.log(invoicePath);
                 const inv_params = {
@@ -247,6 +259,7 @@ let OrdersService = class OrdersService {
                 const trip_fileRes = await this.uploadS3(inv_params);
                 let invoiceLoc = trip_fileRes.Location;
                 await this.orderModel.update({ id: createdItem.id }, { invoice: invoiceLoc });
+                fs.unlinkSync(invoicePath);
             }
         }
         else {
@@ -259,6 +272,7 @@ let OrdersService = class OrdersService {
                 quantity: reqBody.quantity,
                 addressId: reqBody.addressId,
                 totalAmount: reqBody.totalAmount,
+                price: reqBody.price,
                 customerName: reqBody.customerName,
                 customerMobile: reqBody.mobile,
                 address: reqBody.address,
@@ -273,6 +287,28 @@ let OrdersService = class OrdersService {
             };
             console.log(order);
             createdItem = await this.orderModel.save(order);
+            if (zoneMapping && zoneMapping.length) {
+                let noti = {
+                    userId: zoneMapping[0].userId,
+                    content: 'Order Assigned #' + createdItem.id,
+                    created_at: new Date()
+                };
+                await this.notiRepo.save(noti);
+            }
+            let invoicePath = await this.generatePDFfromHTML(createdItem);
+            console.log("invoicePath");
+            console.log(invoicePath);
+            const inv_params = {
+                Key: createdItem.id + '_invoice.pdf',
+                Body: fs.createReadStream(invoicePath),
+                Bucket: 'kh-invoices',
+                ContentDisposition: "inline",
+                ContentType: "application/pdf"
+            };
+            const trip_fileRes = await this.uploadS3(inv_params);
+            let invoiceLoc = trip_fileRes.Location;
+            await this.orderModel.update({ id: createdItem.id }, { invoice: invoiceLoc });
+            fs.unlinkSync(invoicePath);
         }
         return createdItem;
     }
