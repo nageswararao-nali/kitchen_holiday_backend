@@ -241,6 +241,8 @@ let OrdersService = class OrdersService {
                     Key: createdItem.id + '_invoice.pdf',
                     Body: fs.createReadStream(invoicePath),
                     Bucket: 'kh-invoices',
+                    ContentDisposition: "inline",
+                    ContentType: "application/pdf"
                 };
                 const trip_fileRes = await this.uploadS3(inv_params);
                 let invoiceLoc = trip_fileRes.Location;
