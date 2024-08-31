@@ -345,6 +345,7 @@ let OrdersService = class OrdersService {
         let createdItem = {};
         if (reqBody.mySubLastDate) {
             let mySubOrder = await this.orderModel.findOneBy({ mySubId: reqBody.subId });
+            console.log(mySubOrder);
             let currentDate = new Date(reqBody.mySubLastDate);
             let startDate = currentDate.setDate(currentDate.getDate() + 1);
             let orderDates = await this.getOrderDates(startDate, reqBody.dates.length, JSON.parse(mySub.selectedPlan));
