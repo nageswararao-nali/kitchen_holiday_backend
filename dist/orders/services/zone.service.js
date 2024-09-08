@@ -38,7 +38,23 @@ let ZonesService = class ZonesService {
             name: reqBody.name,
             coordinates: reqBody.coordinates
         };
-        const createdItem = await this.zoneRepo.save(subscription);
+        const zoneData = await this.zoneRepo.findOne({ where: { name: reqBody.name } });
+        if (!zoneData) {
+            const createdItem = await this.zoneRepo.save(subscription);
+            return createdItem;
+        }
+        return zoneData;
+    }
+    async editZone(reqBody) {
+        let subscription = {
+            name: reqBody.name,
+            coordinates: reqBody.coordinates
+        };
+        const createdItem = await this.zoneRepo.update({ id: reqBody.id }, subscription);
+        return createdItem;
+    }
+    async deleteZone(reqBody) {
+        const createdItem = await this.zoneRepo.delete({ id: reqBody.id });
         return createdItem;
     }
     async getDeliverySlots(reqBody) {

@@ -47,4 +47,9 @@ export declare class OrdersController {
         success: boolean;
         message: string;
     }>;
+    getTodayOrdersReport(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
 }

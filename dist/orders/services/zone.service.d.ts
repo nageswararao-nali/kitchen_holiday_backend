@@ -10,6 +10,8 @@ export declare class ZonesService {
     findOne(id: number): Promise<ZonesEntity>;
     getZones(reqBody: any): Promise<any>;
     addZone(reqBody: any): Promise<any>;
+    editZone(reqBody: any): Promise<any>;
+    deleteZone(reqBody: any): Promise<any>;
     getDeliverySlots(reqBody: any): Promise<any>;
     addDeliverySlot(reqBody: any): Promise<any>;
     addUserMapping(reqBody: any): Promise<any>;

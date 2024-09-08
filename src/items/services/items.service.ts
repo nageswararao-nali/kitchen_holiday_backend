@@ -64,6 +64,30 @@ export class ItemsService {
     return createdItem;
   }
 
+  async editItem(file, reqBody: any): Promise<any> {
+    let itemData = await this.itemModel.findOneBy({id: reqBody.id});
+    let imagePath = itemData.image;
+    if(file) {
+      console.log("uploading file")
+      const { originalname } = file;
+      const bucketS3 = 'kitchen-holiday-images';
+      const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
+    }
+    let item = {
+      name: reqBody.name,
+      category: reqBody.category,
+      description: reqBody.description,
+      image: imagePath,
+      isVeg: reqBody.isVeg,
+      price: reqBody.price
+    }
+    
+    // return uploadedData.Location
+    const createdItem = await this.itemModel.update({id: reqBody.id}, item);
+    return createdItem;
+  }
+
   async uploadS3(file, bucket, name) {
     const s3 = this.getS3();
     const params = {
@@ -117,6 +141,28 @@ export class ItemsService {
     
     // return uploadedData.Location
     const createdItem = await this.subItemModel.save(item);
+    return createdItem;
+  }
+  async editSubItem(file, reqBody: any): Promise<any> {
+    let itemData = await this.subItemModel.findOneBy({id: reqBody.id});
+    let imagePath = itemData.image;
+    if(file) {
+      const { originalname } = file;
+      const bucketS3 = 'kitchen-holiday-images';
+      const uploadedData: any = await this.uploadS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
+    }
+    let item = {
+      name: reqBody.name,
+      description: reqBody.description,
+      isVeg: reqBody.isVeg,
+      image: imagePath,
+      quantity: reqBody.quantity,
+      price: reqBody.price
+    }
+    
+    // return uploadedData.Location
+    const createdItem = await this.subItemModel.update({id: reqBody.id}, item);
     return createdItem;
   }
   async addItemMapping(reqBody: any): Promise<any> {

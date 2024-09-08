@@ -31,4 +31,5 @@ export declare class OrdersService {
     updateOrder(reqBody: any): Promise<any>;
     updateMySubscription(reqBody: any): Promise<any>;
     deleteMySubscription(reqBody: any): Promise<any>;
+    getTodayOrdersReport(reqBody: any): Promise<any>;
 }

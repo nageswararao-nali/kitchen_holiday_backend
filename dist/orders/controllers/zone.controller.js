@@ -51,6 +51,38 @@ let ZonesController = class ZonesController {
         }
         return response;
     }
+    async editZone(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.zoneService.editZone(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in editing zone";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
+    async deleteZone(reqBody) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const order = await this.zoneService.deleteZone(reqBody);
+        if (!order) {
+            response.success = false;
+            response.message = "problem in deleting zone";
+        }
+        else {
+            response.data = order;
+        }
+        return response;
+    }
     async addUserMapping(reqBody) {
         let response = {
             success: true,
@@ -131,6 +163,20 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], ZonesController.prototype, "addZone", null);
+__decorate([
+    (0, common_1.Post)('editZone'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "editZone", null);
+__decorate([
+    (0, common_1.Post)('deleteZone'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], ZonesController.prototype, "deleteZone", null);
 __decorate([
     (0, common_1.Post)('addUserMapping'),
     __param(0, (0, common_1.Body)()),

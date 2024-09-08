@@ -12,6 +12,16 @@ export declare class ZonesController {
         data: {};
         message: string;
     }>;
+    editZone(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
+    deleteZone(reqBody: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
     addUserMapping(reqBody: any): Promise<{
         success: boolean;
         data: {};

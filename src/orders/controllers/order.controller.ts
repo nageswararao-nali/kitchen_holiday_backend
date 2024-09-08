@@ -169,5 +169,23 @@ export class OrdersController {
     
     return response
   }
+
+  @Post('getTodayOrdersReport')
+  async getTodayOrdersReport(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const sub = await this.orderService.getTodayOrdersReport(reqBody)
+    if(!sub) {
+        response.success = false;
+        response.message = "Problem in getting today order details";
+    } else {
+      response.data = sub
+    }
+    
+    return response
+  }
   
 }

@@ -46,7 +46,7 @@ export class OrdersService {
         whereCon['customerMobile'] = reqBody.mobile
     }
     if(reqBody.name) {
-        whereCon['customerMobile'] = Like(`%${reqBody.name}%`)
+        whereCon['customerName'] = Like(`%${reqBody.name}%`)
     }
     if(reqBody.orderType) {
         whereCon['orderType'] = reqBody.orderType
@@ -67,6 +67,12 @@ export class OrdersService {
     }
     if(reqBody.userId) {
       whereCon['userId'] = reqBody.userId
+    }
+    if(reqBody.id) {
+      whereCon['id'] = reqBody.id
+    }
+    if(reqBody.deliveryParterId) {
+      whereCon['deliveryParterId'] = reqBody.deliveryParterId
     }
     
     const [items, count] = await this.orderModel.findAndCount({where: whereCon, order:{created_at: 'DESC'} });
@@ -495,5 +501,68 @@ export class OrdersService {
     return dd
   }
   
+  async getTodayOrdersReport(reqBody: any): Promise<any> {
+    let whereCon: any = {}
+    let ordersDetails = {
+      noOrders: 0,
+      noVegOrders: 0,
+      noOFNonVegOrders: 0,
+      subData: {},
+      noNormalOrders: 0,
+      noSubOrders: 0,
+      noConfirmed: 0,
+      noReadyPick: 0,
+      noCancelled: 0,
+      noDelivered: 0
+    }
+    if(reqBody.orderDate) {
+      whereCon['orderDate'] = reqBody.orderDate
+    }
+    let orders = await this.orderModel.find({where: whereCon})
+    let {items, count} = await this.itemSerivce.getSubItems({})
+    ordersDetails.noOrders = orders.length
+    for(let order of orders) {
+      if(order.orderType == 'normal') {
+        ordersDetails.noNormalOrders = ordersDetails.noNormalOrders + 1
+      } else {
+        ordersDetails.noSubOrders = ordersDetails.noSubOrders + 1
+      }
+      if(order.status == 'confirmed') {
+        ordersDetails.noConfirmed = ordersDetails.noConfirmed + 1
+      }
+      if(order.status == 'ready') {
+        ordersDetails.noReadyPick = ordersDetails.noReadyPick + 1
+      }
+      if(order.status == 'cancelled') {
+        ordersDetails.noCancelled = ordersDetails.noCancelled + 1
+      }
+      if(order.status == 'delivered') {
+        ordersDetails.noDelivered = ordersDetails.noDelivered + 1
+      }
+      let itemDetails = await this.itemSerivce.getItem({id: order.itemId})
+      if(itemDetails.isVeg) {
+        ordersDetails.noVegOrders = ordersDetails.noVegOrders + 1
+      }else {
+        ordersDetails.noOFNonVegOrders = ordersDetails.noOFNonVegOrders + 1
+      }
+      
+      let subItems = JSON.parse(order.subItems)
+      let subItemsIds = Object.keys(subItems)
+      for(let subItemId of subItemsIds) {
+        let subItemData = items.filter((subItem) => {
+          return subItemId == subItem.id
+        })[0]
+        if(subItemData) {
+          if(!ordersDetails.subData[subItemData.id]){
+            ordersDetails.subData[subItemData.id] = {name: subItemData.name, quantity: 1 }
+          } else {
+            ordersDetails.subData[subItemData.id]["quantity"] = ordersDetails.subData[subItemData.id]["quantity"] + 1
+          }
+        }
+      }
+      
+    }
+    return ordersDetails
+  }
   
 }

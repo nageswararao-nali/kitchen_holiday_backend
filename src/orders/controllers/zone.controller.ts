@@ -44,6 +44,40 @@ export class ZonesController {
       return response
   }
 
+  @Post('editZone')
+  async editZone(@Body() reqBody: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const order = await this.zoneService.editZone(reqBody)
+      if (!order) {
+          response.success = false;
+          response.message = "problem in editing zone";
+      } else {
+          response.data = order
+      }
+      return response
+  }
+
+  @Post('deleteZone')
+  async deleteZone(@Body() reqBody: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const order = await this.zoneService.deleteZone(reqBody)
+      if (!order) {
+          response.success = false;
+          response.message = "problem in deleting zone";
+      } else {
+          response.data = order
+      }
+      return response
+  }
+
   
   @Post('addUserMapping')
   async addUserMapping(@Body() reqBody: any) {

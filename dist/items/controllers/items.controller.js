@@ -68,6 +68,22 @@ let ItemsController = class ItemsController {
         }
         return response;
     }
+    async editItem(reqBody, itemImage) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const odometerUpload = await this.itemsService.editItem(itemImage, reqBody);
+        if (!odometerUpload) {
+            response.success = false;
+            response.message = "Problem in editing item";
+        }
+        else {
+            response.data = odometerUpload;
+        }
+        return response;
+    }
     async getSubItems(reqBody) {
         let response = {
             data: {},
@@ -110,6 +126,22 @@ let ItemsController = class ItemsController {
         if (!odometerUpload) {
             response.success = false;
             response.message = "problem in adding sub item";
+        }
+        else {
+            response.data = odometerUpload;
+        }
+        return response;
+    }
+    async editSubItem(reqBody, itemImage) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const odometerUpload = await this.itemsService.editSubItem(itemImage, reqBody);
+        if (!odometerUpload) {
+            response.success = false;
+            response.message = "problem in editing sub item";
         }
         else {
             response.data = odometerUpload;
@@ -206,6 +238,15 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ItemsController.prototype, "addItem", null);
 __decorate([
+    (0, common_1.Post)('edit'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('itemImage')),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ItemsController.prototype, "editItem", null);
+__decorate([
     (0, common_1.Post)('getSubItems'),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -228,6 +269,15 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], ItemsController.prototype, "addSubItem", null);
+__decorate([
+    (0, common_1.Post)('editSubItem'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('itemImage')),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], ItemsController.prototype, "editSubItem", null);
 __decorate([
     (0, common_1.Post)('addItemMapping'),
     __param(0, (0, common_1.Body)()),

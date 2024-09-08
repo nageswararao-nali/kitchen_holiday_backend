@@ -17,6 +17,11 @@ export declare class ItemsController {
         data: {};
         message: string;
     }>;
+    editItem(reqBody: any, itemImage: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
     getSubItems(reqBody: any): Promise<{
         data: {};
         success: boolean;
@@ -28,6 +33,11 @@ export declare class ItemsController {
         message: string;
     }>;
     addSubItem(reqBody: any, itemImage: any): Promise<{
+        success: boolean;
+        data: {};
+        message: string;
+    }>;
+    editSubItem(reqBody: any, itemImage: any): Promise<{
         success: boolean;
         data: {};
         message: string;

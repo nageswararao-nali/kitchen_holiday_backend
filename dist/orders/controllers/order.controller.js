@@ -163,6 +163,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async getTodayOrdersReport(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const sub = await this.orderService.getTodayOrdersReport(reqBody);
+        if (!sub) {
+            response.success = false;
+            response.message = "Problem in getting today order details";
+        }
+        else {
+            response.data = sub;
+        }
+        return response;
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -228,6 +244,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrderDates", null);
+__decorate([
+    (0, common_1.Post)('getTodayOrdersReport'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "getTodayOrdersReport", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrdersService])

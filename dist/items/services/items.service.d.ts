@@ -15,11 +15,13 @@ export declare class ItemsService {
     list(reqBody: any): Promise<any>;
     getItem(reqBody: any): Promise<any>;
     addItem(file: any, reqBody: any): Promise<any>;
+    editItem(file: any, reqBody: any): Promise<any>;
     uploadS3(file: any, bucket: any, name: any): Promise<unknown>;
     getS3(): S3;
     getSubItems(reqBody: any): Promise<any>;
     getSubItem(reqBody: any): Promise<any>;
     addSubItem(file: any, reqBody: any): Promise<any>;
+    editSubItem(file: any, reqBody: any): Promise<any>;
     addItemMapping(reqBody: any): Promise<any>;
     getItemMappings(reqBody: any): Promise<any>;
     deleteItem(reqBody: any): Promise<any>;

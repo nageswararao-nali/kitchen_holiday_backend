@@ -46,8 +46,6 @@ export class ItemsController {
     return response
   }
 
-  
-
   @Post('add')
   @UseInterceptors(FileInterceptor('itemImage'))
   async addItem(@Body() reqBody: any, @UploadedFile() itemImage: any) {
@@ -60,6 +58,24 @@ export class ItemsController {
       if (!odometerUpload) {
           response.success = false;
           response.message = "Problem in adding item";
+      } else {
+          response.data = odometerUpload
+      }
+      return response
+  }
+
+  @Post('edit')
+  @UseInterceptors(FileInterceptor('itemImage'))
+  async editItem(@Body() reqBody: any, @UploadedFile() itemImage: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const odometerUpload = await this.itemsService.editItem(itemImage, reqBody)
+      if (!odometerUpload) {
+          response.success = false;
+          response.message = "Problem in editing item";
       } else {
           response.data = odometerUpload
       }
@@ -116,6 +132,24 @@ export class ItemsController {
       if (!odometerUpload) {
           response.success = false;
           response.message = "problem in adding sub item";
+      } else {
+          response.data = odometerUpload
+      }
+      return response
+  }
+
+  @Post('editSubItem')
+  @UseInterceptors(FileInterceptor('itemImage'))
+  async editSubItem(@Body() reqBody: any, @UploadedFile() itemImage: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const odometerUpload = await this.itemsService.editSubItem(itemImage, reqBody)
+      if (!odometerUpload) {
+          response.success = false;
+          response.message = "problem in editing sub item";
       } else {
           response.data = odometerUpload
       }
