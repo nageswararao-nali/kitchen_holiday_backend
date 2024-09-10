@@ -93,6 +93,25 @@ export class UsersController {
     return response
   }
 
+  @Post('getUsersSearch')
+  async getUsersSearch(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'User list'
+    }
+    const {items, count} = await this.usersService.getUsersSearch(reqBody)
+    if(!count) {
+        response.success = false;
+        response.message = "Problem in getting users";
+    } else {
+      response.data = {users: items, count}
+    }
+    
+    return response
+  }
+  
+
   @Post('addUserAddress')
   async addUserAddress(@Body() reqBody: any) {
     let response = {

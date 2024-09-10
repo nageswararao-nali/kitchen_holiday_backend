@@ -63,15 +63,22 @@ export class SubscriptionsService {
   }
 
   async addSubscription(reqBody: any): Promise<any> {
+    let createdItem = null
     let subscription = {
       name: reqBody.name,
+      shortName: reqBody.shortName,
       description: reqBody.description,
       price: reqBody.price,
       days: reqBody.days,
       isVeg: reqBody.isVeg
     }
     console.log(subscription)
-    const createdItem = await this.subRepo.save(subscription);
+    if(reqBody.id) {
+      createdItem = await this.subRepo.update({id: reqBody.id}, subscription);
+    } else {
+      createdItem = await this.subRepo.save(subscription);
+    }
+    
     return createdItem;
   }  
 

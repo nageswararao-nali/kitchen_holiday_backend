@@ -77,7 +77,7 @@ let OrdersService = class OrdersService {
         if (reqBody.deliveryParterId) {
             whereCon['deliveryParterId'] = reqBody.deliveryParterId;
         }
-        const [items, count] = await this.orderModel.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
+        const [items, count] = await this.orderModel.findAndCount({ where: whereCon, take: 300, order: { created_at: 'DESC' } });
         return { items, count };
     }
     async getOrder(reqBody) {
@@ -446,7 +446,8 @@ let OrdersService = class OrdersService {
             noConfirmed: 0,
             noReadyPick: 0,
             noCancelled: 0,
-            noDelivered: 0
+            noDelivered: 0,
+            noSubItems: 0
         };
         if (reqBody.orderDate) {
             whereCon['orderDate'] = reqBody.orderDate;
@@ -493,6 +494,7 @@ let OrdersService = class OrdersService {
                     else {
                         ordersDetails.subData[subItemData.id]["quantity"] = ordersDetails.subData[subItemData.id]["quantity"] + 1;
                     }
+                    ordersDetails.noSubItems = ordersDetails.noSubItems + 1;
                 }
             }
         }

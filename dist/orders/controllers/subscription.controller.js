@@ -67,6 +67,22 @@ let SubscriptionsController = class SubscriptionsController {
         }
         return response;
     }
+    async getSubscription(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Subscriptions list'
+        };
+        const item = await this.subscriptionService.getSubscription(reqBody);
+        if (!item) {
+            response.success = false;
+            response.message = "Problem in getting subscription the user";
+        }
+        else {
+            response.data = item;
+        }
+        return response;
+    }
     async deleteSubscription(reqBody) {
         let response = {
             success: true,
@@ -106,6 +122,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], SubscriptionsController.prototype, "getMySubscriptions", null);
+__decorate([
+    (0, common_1.Post)('getSubscription'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], SubscriptionsController.prototype, "getSubscription", null);
 __decorate([
     (0, common_1.Post)('deleteSubscription'),
     __param(0, (0, common_1.Body)()),

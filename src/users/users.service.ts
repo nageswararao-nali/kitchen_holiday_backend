@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { UserEntity } from './models/user.entity';
 import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { AddressEntity } from './models/address.entity';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
@@ -45,6 +45,23 @@ export class UsersService {
     return user
   }
 
+  async update(reqBody: any): Promise<any> {
+
+    let userInput = {
+      fName: reqBody.fName,
+      lName: reqBody.lName,
+      username: reqBody.username,
+      mobile: reqBody.mobile,
+      email: reqBody.email,
+      user_type: reqBody.user_type ? reqBody.user_type : 'customer',
+      password: reqBody.password,
+      isActive: true
+    }
+    console.log(userInput)
+    let user = await this.usersRepo.update({id: reqBody.userId},userInput)
+    return user
+  }
+
   // async setOtp(mobileNumber: string, otp: string, otpExpiry: Date): Promise<User> {
   //   let user = await this.userModel.findOneAndUpdate({ mobileNumber }, { otp, otpExpiry }, { upsert: true, new: true }).exec();
   //   console.log(user)
@@ -81,6 +98,37 @@ export class UsersService {
     return {items, count}
   }
 
+  async getUser(reqBody: any): Promise<any> {
+    console.log(reqBody.searchQuery)
+    const user = await this.usersRepo.findOneBy({id: reqBody.id});
+    return user
+  }
+  
+
+  async getUsersSearch(reqBody: any): Promise<any> {
+    console.log(reqBody.searchQuery)
+    let whereCond = {}
+    if(reqBody.search) {
+      whereCond = [
+        {
+          user_type: reqBody.user_type,
+          username: Like(`%${reqBody.search}%`)
+        },
+        {
+          user_type: reqBody.user_type,
+          email: Like(`%${reqBody.search}%`)
+        },
+        {
+          user_type: reqBody.user_type,
+          mobile: Like(`%${reqBody.search}%`)
+        }
+      ]
+    }
+    
+    const [items, count] = await this.usersRepo.findAndCount({where:whereCond});
+    return {items, count}
+  }
+  
   async userAddressesByUserId(userId: number): Promise<any> {
     const [items, count] = await this.addressRepo.findAndCount({where:{userId}});
     return {items, count}

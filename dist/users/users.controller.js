@@ -97,6 +97,22 @@ let UsersController = class UsersController {
         }
         return response;
     }
+    async getUsersSearch(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'User list'
+        };
+        const { items, count } = await this.usersService.getUsersSearch(reqBody);
+        if (!count) {
+            response.success = false;
+            response.message = "Problem in getting users";
+        }
+        else {
+            response.data = { users: items, count };
+        }
+        return response;
+    }
     async addUserAddress(reqBody) {
         let response = {
             data: {},
@@ -230,6 +246,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "getUsers", null);
+__decorate([
+    (0, common_1.Post)('getUsersSearch'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "getUsersSearch", null);
 __decorate([
     (0, common_1.Post)('addUserAddress'),
     __param(0, (0, common_1.Body)()),

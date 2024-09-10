@@ -22,6 +22,11 @@ export declare class UsersController {
         success: boolean;
         message: string;
     }>;
+    getUsersSearch(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
     addUserAddress(reqBody: any): Promise<{
         data: {};
         success: boolean;

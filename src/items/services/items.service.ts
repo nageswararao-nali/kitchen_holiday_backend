@@ -42,6 +42,7 @@ export class ItemsService {
   
 
   async addItem(file, reqBody: any): Promise<any> {
+    let createdItem = null
     let imagePath = "";
     if(file) {
       console.log("uploading file")
@@ -60,7 +61,12 @@ export class ItemsService {
     }
     
     // return uploadedData.Location
-    const createdItem = await this.itemModel.save(item);
+    if(reqBody.id) {
+      createdItem = await this.itemModel.update({id: reqBody.id}, item);
+    } else {
+      createdItem = await this.itemModel.save(item);
+    }
+    
     return createdItem;
   }
 
@@ -123,6 +129,7 @@ export class ItemsService {
   }
 
   async addSubItem(file, reqBody: any): Promise<any> {
+    let createdItem = null
     let imagePath = "";
     if(file) {
       const { originalname } = file;
@@ -140,7 +147,12 @@ export class ItemsService {
     }
     
     // return uploadedData.Location
-    const createdItem = await this.subItemModel.save(item);
+    if(reqBody.id) {
+      createdItem = await this.subItemModel.update({id: reqBody.id}, item);
+    } else {
+      createdItem = await this.subItemModel.save(item);
+    }
+    
     return createdItem;
   }
   async editSubItem(file, reqBody: any): Promise<any> {

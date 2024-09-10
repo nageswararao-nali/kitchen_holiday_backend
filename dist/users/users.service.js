@@ -50,6 +50,21 @@ let UsersService = class UsersService {
         let user = await this.usersRepo.save(userInput);
         return user;
     }
+    async update(reqBody) {
+        let userInput = {
+            fName: reqBody.fName,
+            lName: reqBody.lName,
+            username: reqBody.username,
+            mobile: reqBody.mobile,
+            email: reqBody.email,
+            user_type: reqBody.user_type ? reqBody.user_type : 'customer',
+            password: reqBody.password,
+            isActive: true
+        };
+        console.log(userInput);
+        let user = await this.usersRepo.update({ id: reqBody.userId }, userInput);
+        return user;
+    }
     async login(username, password, userType) {
         const user = await this.usersRepo.findOneBy({ username });
         console.log(user);
@@ -66,6 +81,33 @@ let UsersService = class UsersService {
     async getUsers(reqBody) {
         console.log(reqBody.searchQuery);
         const [items, count] = await this.usersRepo.findAndCount({ where: reqBody.searchQuery });
+        return { items, count };
+    }
+    async getUser(reqBody) {
+        console.log(reqBody.searchQuery);
+        const user = await this.usersRepo.findOneBy({ id: reqBody.id });
+        return user;
+    }
+    async getUsersSearch(reqBody) {
+        console.log(reqBody.searchQuery);
+        let whereCond = {};
+        if (reqBody.search) {
+            whereCond = [
+                {
+                    user_type: reqBody.user_type,
+                    username: (0, typeorm_2.Like)(`%${reqBody.search}%`)
+                },
+                {
+                    user_type: reqBody.user_type,
+                    email: (0, typeorm_2.Like)(`%${reqBody.search}%`)
+                },
+                {
+                    user_type: reqBody.user_type,
+                    mobile: (0, typeorm_2.Like)(`%${reqBody.search}%`)
+                }
+            ];
+        }
+        const [items, count] = await this.usersRepo.findAndCount({ where: whereCond });
         return { items, count };
     }
     async userAddressesByUserId(userId) {

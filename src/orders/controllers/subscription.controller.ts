@@ -62,6 +62,25 @@ export class SubscriptionsController {
     return response
   }
 
+  @Post('getSubscription')
+  async getSubscription(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Subscriptions list'
+    }
+    const item = await this.subscriptionService.getSubscription(reqBody)
+    if(!item) {
+        response.success = false;
+        response.message = "Problem in getting subscription the user";
+    } else {
+      response.data = item
+    }
+    
+    return response
+  }
+  
+
   @Post('deleteSubscription')
   async deleteSubscription(@Body() reqBody: any) {
       let response = {

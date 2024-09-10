@@ -43,6 +43,7 @@ let ItemsService = class ItemsService {
         return item;
     }
     async addItem(file, reqBody) {
+        let createdItem = null;
         let imagePath = "";
         if (file) {
             console.log("uploading file");
@@ -59,7 +60,12 @@ let ItemsService = class ItemsService {
             isVeg: reqBody.isVeg,
             price: reqBody.price
         };
-        const createdItem = await this.itemModel.save(item);
+        if (reqBody.id) {
+            createdItem = await this.itemModel.update({ id: reqBody.id }, item);
+        }
+        else {
+            createdItem = await this.itemModel.save(item);
+        }
         return createdItem;
     }
     async editItem(file, reqBody) {
@@ -114,6 +120,7 @@ let ItemsService = class ItemsService {
         return item;
     }
     async addSubItem(file, reqBody) {
+        let createdItem = null;
         let imagePath = "";
         if (file) {
             const { originalname } = file;
@@ -129,7 +136,12 @@ let ItemsService = class ItemsService {
             quantity: reqBody.quantity,
             price: reqBody.price
         };
-        const createdItem = await this.subItemModel.save(item);
+        if (reqBody.id) {
+            createdItem = await this.subItemModel.update({ id: reqBody.id }, item);
+        }
+        else {
+            createdItem = await this.subItemModel.save(item);
+        }
         return createdItem;
     }
     async editSubItem(file, reqBody) {
