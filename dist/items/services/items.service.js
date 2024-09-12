@@ -45,6 +45,10 @@ let ItemsService = class ItemsService {
     async addItem(file, reqBody) {
         let createdItem = null;
         let imagePath = "";
+        if (reqBody.id && reqBody.id != undefined) {
+            let itemData = await this.itemModel.findOneBy({ id: reqBody.id });
+            imagePath = itemData.image;
+        }
         if (file) {
             console.log("uploading file");
             const { originalname } = file;
@@ -60,7 +64,7 @@ let ItemsService = class ItemsService {
             isVeg: reqBody.isVeg,
             price: reqBody.price
         };
-        if (reqBody.id) {
+        if (reqBody.id && reqBody.id != undefined) {
             createdItem = await this.itemModel.update({ id: reqBody.id }, item);
         }
         else {
@@ -122,6 +126,10 @@ let ItemsService = class ItemsService {
     async addSubItem(file, reqBody) {
         let createdItem = null;
         let imagePath = "";
+        if (reqBody.id && reqBody.id == undefined) {
+            let itemData = await this.subItemModel.findOneBy({ id: reqBody.id });
+            imagePath = itemData.image;
+        }
         if (file) {
             const { originalname } = file;
             const bucketS3 = 'kitchen-holiday-images';
@@ -136,7 +144,7 @@ let ItemsService = class ItemsService {
             quantity: reqBody.quantity,
             price: reqBody.price
         };
-        if (reqBody.id) {
+        if (reqBody.id && reqBody.id == undefined) {
             createdItem = await this.subItemModel.update({ id: reqBody.id }, item);
         }
         else {

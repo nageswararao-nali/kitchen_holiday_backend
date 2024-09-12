@@ -44,6 +44,11 @@ export class ItemsService {
   async addItem(file, reqBody: any): Promise<any> {
     let createdItem = null
     let imagePath = "";
+    if(reqBody.id && reqBody.id != undefined) {
+      let itemData = await this.itemModel.findOneBy({id: reqBody.id});
+      imagePath = itemData.image
+    }
+    
     if(file) {
       console.log("uploading file")
       const { originalname } = file;
@@ -61,7 +66,7 @@ export class ItemsService {
     }
     
     // return uploadedData.Location
-    if(reqBody.id) {
+    if(reqBody.id && reqBody.id != undefined) {
       createdItem = await this.itemModel.update({id: reqBody.id}, item);
     } else {
       createdItem = await this.itemModel.save(item);
@@ -131,6 +136,10 @@ export class ItemsService {
   async addSubItem(file, reqBody: any): Promise<any> {
     let createdItem = null
     let imagePath = "";
+    if(reqBody.id && reqBody.id == undefined) {
+      let itemData = await this.subItemModel.findOneBy({id: reqBody.id});
+      imagePath = itemData.image;
+    }
     if(file) {
       const { originalname } = file;
       const bucketS3 = 'kitchen-holiday-images';
@@ -147,7 +156,7 @@ export class ItemsService {
     }
     
     // return uploadedData.Location
-    if(reqBody.id) {
+    if(reqBody.id && reqBody.id == undefined) {
       createdItem = await this.subItemModel.update({id: reqBody.id}, item);
     } else {
       createdItem = await this.subItemModel.save(item);
