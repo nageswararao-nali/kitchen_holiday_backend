@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.OrdersController = void 0;
 const common_1 = require("@nestjs/common");
 const order_service_1 = require("../services/order.service");
+const platform_express_1 = require("@nestjs/platform-express");
 let OrdersController = class OrdersController {
     constructor(orderService) {
         this.orderService = orderService;
@@ -26,6 +27,22 @@ let OrdersController = class OrdersController {
             message: 'Items list'
         };
         const { items, count } = await this.orderService.list(reqBody);
+        if (!count) {
+            response.success = false;
+            response.message = "Problem in getting categories list the user";
+        }
+        else {
+            response.data = { items, count };
+        }
+        return response;
+    }
+    async deliveryOrders(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'orders list'
+        };
+        const { items, count } = await this.orderService.deliveryOrders(reqBody);
         if (!count) {
             response.success = false;
             response.message = "Problem in getting categories list the user";
@@ -179,6 +196,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async uploadDeliveryImage(reqBody, itemImage) {
+        let response = {
+            success: true,
+            data: {},
+            message: ''
+        };
+        const odometerUpload = await this.orderService.uploadDeliveryImage(itemImage, reqBody);
+        if (!odometerUpload) {
+            response.success = false;
+            response.message = "Problem in adding item";
+        }
+        else {
+            response.data = odometerUpload;
+        }
+        return response;
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -188,6 +221,13 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getOrders", null);
+__decorate([
+    (0, common_1.Post)('deliveryOrders'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "deliveryOrders", null);
 __decorate([
     (0, common_1.Post)('getOrder'),
     __param(0, (0, common_1.Body)()),
@@ -251,6 +291,15 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "getTodayOrdersReport", null);
+__decorate([
+    (0, common_1.Post)('uploadDeliveryImage'),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('deliveryImage')),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "uploadDeliveryImage", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrdersService])

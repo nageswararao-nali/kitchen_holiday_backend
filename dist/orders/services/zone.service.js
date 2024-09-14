@@ -36,10 +36,18 @@ let ZonesService = class ZonesService {
     async addZone(reqBody) {
         let subscription = {
             name: reqBody.name,
-            coordinates: reqBody.coordinates
+            zipcode: reqBody.zipcode
         };
-        const zoneData = await this.zoneRepo.findOne({ where: { name: reqBody.name } });
-        if (!zoneData) {
+        if (reqBody.latitude) {
+            subscription['latitude'] = reqBody.latitude;
+            subscription['longitude'] = reqBody.longitude;
+            subscription['location'] = `POINT(${reqBody.latitude} ${reqBody.longitude})`;
+        }
+        const zoneData = await this.zoneRepo.query(`SELECT *, ST_AsText(location) AS location FROM zones where name='${reqBody.name}' and zipcode='${reqBody.zipcode}' and latitude='${reqBody.latitude}';`);
+        console.log("zoneData");
+        console.log(zoneData);
+        if (!zoneData.length) {
+            console.log(subscription);
             const createdItem = await this.zoneRepo.save(subscription);
             return createdItem;
         }

@@ -27,6 +27,25 @@ export class OrdersController {
     return response
   }
 
+  @Post('deliveryOrders')
+  async deliveryOrders(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'orders list'
+    }
+    const {items, count} = await this.orderService.deliveryOrders(reqBody)
+    if(!count) {
+        response.success = false;
+        response.message = "Problem in getting categories list the user";
+    } else {
+      response.data = {items, count}
+    }
+    
+    return response
+  }
+  
+
   @Post('getOrder')
   async getOrder(@Body() reqBody: any) {
     let response = {
@@ -188,4 +207,21 @@ export class OrdersController {
     return response
   }
   
+  @Post('uploadDeliveryImage')
+  @UseInterceptors(FileInterceptor('deliveryImage'))
+  async uploadDeliveryImage(@Body() reqBody: any, @UploadedFile() itemImage: any) {
+      let response = {
+          success: true,
+          data: {},
+          message: ''
+      }
+      const odometerUpload = await this.orderService.uploadDeliveryImage(itemImage, reqBody)
+      if (!odometerUpload) {
+          response.success = false;
+          response.message = "Problem in adding item";
+      } else {
+          response.data = odometerUpload
+      }
+      return response
+  }
 }

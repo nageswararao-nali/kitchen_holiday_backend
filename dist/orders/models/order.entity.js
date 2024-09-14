@@ -111,6 +111,14 @@ __decorate([
     __metadata("design:type", String)
 ], OrdersEntity.prototype, "invoice", void 0);
 __decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], OrdersEntity.prototype, "isPickFromKitchen", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], OrdersEntity.prototype, "deliveryImage", void 0);
+__decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
 ], OrdersEntity.prototype, "created_at", void 0);

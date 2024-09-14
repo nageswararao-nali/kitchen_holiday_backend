@@ -8,16 +8,22 @@ import { ZoneMappingEntity } from '../models/zoneMapping.entity';
 import { NotificationsEntity } from '../models/notifications.entity';
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { PaymentsEntity } from '../models/payments.entity';
+import { RefundsEntity } from '../models/refund.entity';
+import { OrderLocationsEntity } from '../models/orderLocations.entity';
 export declare class OrdersService {
     private orderModel;
     private mySubModel;
     private zoneMapRepo;
     private notiRepo;
+    private paymentRepo;
+    private refundRepo;
+    private ordLocRepo;
     private userService;
     private itemSerivce;
     private subSerivce;
     private configService;
-    constructor(orderModel: Repository<OrdersEntity>, mySubModel: Repository<MySubscriptionsEntity>, zoneMapRepo: Repository<ZoneMappingEntity>, notiRepo: Repository<NotificationsEntity>, userService: UsersService, itemSerivce: ItemsService, subSerivce: SubscriptionsService, configService: ConfigService);
+    constructor(orderModel: Repository<OrdersEntity>, mySubModel: Repository<MySubscriptionsEntity>, zoneMapRepo: Repository<ZoneMappingEntity>, notiRepo: Repository<NotificationsEntity>, paymentRepo: Repository<PaymentsEntity>, refundRepo: Repository<RefundsEntity>, ordLocRepo: Repository<OrderLocationsEntity>, userService: UsersService, itemSerivce: ItemsService, subSerivce: SubscriptionsService, configService: ConfigService);
     findOne(id: number): Promise<OrdersEntity>;
     list(reqBody: any): Promise<any>;
     getOrder(reqBody: any): Promise<any>;
@@ -32,4 +38,7 @@ export declare class OrdersService {
     updateMySubscription(reqBody: any): Promise<any>;
     deleteMySubscription(reqBody: any): Promise<any>;
     getTodayOrdersReport(reqBody: any): Promise<any>;
+    uploadDeliveryImage(file: any, reqBody: any): Promise<any>;
+    uploadFileS3(file: any, bucket: any, name: any): Promise<unknown>;
+    deliveryOrders(reqBody: any): Promise<any>;
 }

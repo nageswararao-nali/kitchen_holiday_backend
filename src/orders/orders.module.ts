@@ -16,15 +16,21 @@ import { DeliverySlotsEntity } from './models/deliverySlots.entity';
 import { MySubscriptionsEntity } from './models/mysubscriptions.entity';
 import { ZoneMappingEntity } from './models/zoneMapping.entity';
 import { NotificationsEntity } from './models/notifications.entity';
+import { PaymentsEntity } from './models/payments.entity';
+import { RefundsEntity } from './models/refund.entity';
+import { PaymentsController } from './controllers/payments.controller';
+import { PaymentsService } from './services/payments.service';
+import { OrderLocationsEntity } from './models/orderLocations.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([OrdersEntity, SubscriptionsEntity, ZonesEntity, 
-      DeliverySlotsEntity, MySubscriptionsEntity, ZoneMappingEntity, NotificationsEntity]),
+      DeliverySlotsEntity, MySubscriptionsEntity, ZoneMappingEntity, 
+      NotificationsEntity, PaymentsEntity, RefundsEntity, OrderLocationsEntity]),
     UsersModule,
     ItemsModule
   ],
-  providers: [OrdersService, OrdersEntity, SubscriptionsEntity, SubscriptionsService, ZonesService],
-  controllers: [OrdersController, SubscriptionsController, ZonesController],
+  providers: [OrdersService, OrdersEntity, SubscriptionsEntity, SubscriptionsService, ZonesService, PaymentsService],
+  controllers: [OrdersController, SubscriptionsController, ZonesController, PaymentsController],
 })
 export class OrdersModule {}

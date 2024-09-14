@@ -24,6 +24,11 @@ const deliverySlots_entity_1 = require("./models/deliverySlots.entity");
 const mysubscriptions_entity_1 = require("./models/mysubscriptions.entity");
 const zoneMapping_entity_1 = require("./models/zoneMapping.entity");
 const notifications_entity_1 = require("./models/notifications.entity");
+const payments_entity_1 = require("./models/payments.entity");
+const refund_entity_1 = require("./models/refund.entity");
+const payments_controller_1 = require("./controllers/payments.controller");
+const payments_service_1 = require("./services/payments.service");
+const orderLocations_entity_1 = require("./models/orderLocations.entity");
 let OrdersModule = class OrdersModule {
 };
 exports.OrdersModule = OrdersModule;
@@ -31,12 +36,13 @@ exports.OrdersModule = OrdersModule = __decorate([
     (0, common_1.Module)({
         imports: [
             typeorm_1.TypeOrmModule.forFeature([order_entity_1.OrdersEntity, subscription_entity_1.SubscriptionsEntity, zone_entity_1.ZonesEntity,
-                deliverySlots_entity_1.DeliverySlotsEntity, mysubscriptions_entity_1.MySubscriptionsEntity, zoneMapping_entity_1.ZoneMappingEntity, notifications_entity_1.NotificationsEntity]),
+                deliverySlots_entity_1.DeliverySlotsEntity, mysubscriptions_entity_1.MySubscriptionsEntity, zoneMapping_entity_1.ZoneMappingEntity,
+                notifications_entity_1.NotificationsEntity, payments_entity_1.PaymentsEntity, refund_entity_1.RefundsEntity, orderLocations_entity_1.OrderLocationsEntity]),
             users_module_1.UsersModule,
             items_module_1.ItemsModule
         ],
-        providers: [order_service_1.OrdersService, order_entity_1.OrdersEntity, subscription_entity_1.SubscriptionsEntity, subscription_service_1.SubscriptionsService, zone_service_1.ZonesService],
-        controllers: [order_controller_1.OrdersController, subscription_controller_1.SubscriptionsController, zone_controller_1.ZonesController],
+        providers: [order_service_1.OrdersService, order_entity_1.OrdersEntity, subscription_entity_1.SubscriptionsEntity, subscription_service_1.SubscriptionsService, zone_service_1.ZonesService, payments_service_1.PaymentsService],
+        controllers: [order_controller_1.OrdersController, subscription_controller_1.SubscriptionsController, zone_controller_1.ZonesController, payments_controller_1.PaymentsController],
     })
 ], OrdersModule);
 //# sourceMappingURL=orders.module.js.map

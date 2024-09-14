@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { OrdersEntity } from '../models/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Not, Repository } from 'typeorm';
+import { In, Like, Not, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
@@ -18,6 +18,9 @@ import * as  puppeteer from 'puppeteer';
 import * as fs from 'fs'
 import { S3 } from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { PaymentsEntity } from '../models/payments.entity';
+import { RefundsEntity } from '../models/refund.entity';
+import { OrderLocationsEntity } from '../models/orderLocations.entity';
 
 @Injectable()
 export class OrdersService {
@@ -30,6 +33,13 @@ export class OrdersService {
     private zoneMapRepo: Repository<ZoneMappingEntity>,
     @InjectRepository(NotificationsEntity)
     private notiRepo: Repository<NotificationsEntity>,
+    @InjectRepository(PaymentsEntity)
+    private paymentRepo: Repository<PaymentsEntity>,
+    @InjectRepository(RefundsEntity)
+    private refundRepo: Repository<RefundsEntity>,
+    @InjectRepository(OrderLocationsEntity)
+    private ordLocRepo: Repository<OrderLocationsEntity>,
+    
     private userService: UsersService,
     private itemSerivce: ItemsService,
     private subSerivce: SubscriptionsService,
@@ -235,8 +245,10 @@ export class OrdersService {
   }
   async addUserOrder(reqBody: any): Promise<any> {
     console.log("add order")
+    console.log(reqBody)
     let createdItem: any = {}
     let subItems = {}
+    let customerDetails = await this.userService.findOneById(reqBody.userId)
     for(let subItemId of reqBody.subItems) {
       if(!subItems[subItemId]) {
         subItems[subItemId] = 0
@@ -253,11 +265,12 @@ export class OrdersService {
     }
     let deliveryBoy: any = {}
     let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
-    if(zoneMapping && zoneMapping.length) {
+    if(zoneMapping && zoneMapping.length && reqBody.isPickFromKitchen != true) {
       deliveryBoy = await this.userService.findOneById(parseInt(zoneMapping[0].userId))
     }
     
-    if(reqBody.startDate) {
+    if(reqBody.startDate && reqBody.noOrders) {
+      console.log("tete")
       let orderDates = await this.getOrderDates(reqBody.startDate, reqBody.noOrders, reqBody.selectedPlan);
       console.log(orderDates)
       let subscription = await this.subSerivce.getSubscription({id: reqBody.subscriptionId})
@@ -283,7 +296,7 @@ export class OrdersService {
           itemName: reqBody.itemName,
           subItems: JSON.stringify(subItems),
           quantity: reqBody.quantity,
-          price: reqBody.price,
+          price: reqBody.price/subscription.days,
           addressId: reqBody.addressId,
           totalAmount: reqBody.totalAmount,
           customerName: reqBody.customerName,
@@ -299,17 +312,38 @@ export class OrdersService {
           deliverySlot: reqBody.deliverySlot,
           mySubId: muSub.id,
           deliveryParterId: deliveryBoy.id ? deliveryBoy.id : 0,
-          deliveryParterName: deliveryBoy.id ? deliveryBoy.name : ''
+          deliveryParterName: deliveryBoy.id ? deliveryBoy.name : '',
+          isPickFromKitchen: reqBody.isPickFromKitchen ? reqBody.isPickFromKitchen : false
         }
         console.log(order)
         createdItem = await this.orderModel.save(order);
-        if(zoneMapping && zoneMapping.length) {
-          let noti = {
-            userId: zoneMapping[0].userId,
-            content: 'Order Assigned #'+createdItem.id,
-            created_at: new Date()
+        let ordLocObj = {
+          orderId: createdItem.id,
+          latitude: reqBody.latitude,
+          longitude: reqBody.longitude,
+          location: `POINT(${reqBody.longitude} ${reqBody.latitude})`
+        }
+        await this.ordLocRepo.save(ordLocObj)
+        let payData = {
+          userId: reqBody.userId,
+          customerName: customerDetails.fName + " " + customerDetails.lName,
+          customerMobile: customerDetails.mobile,
+          customerEmail: customerDetails.email,
+          orderId: muSub.id,
+          amount: reqBody.totalAmount,
+          isSubscribe: true,
+          paymentDate: moment().format('YYYY-MM-DD HH:mm:ss')
+        }
+        await this.paymentRepo.save(payData)
+        if(reqBody.isPickFromKitchen != true)  {
+          if(zoneMapping && zoneMapping.length) {
+            let noti = {
+              userId: zoneMapping[0].userId,
+              content: 'Order Assigned #'+createdItem.id,
+              created_at: new Date()
+            }
+            await this.notiRepo.save(noti)
           }
-          await this.notiRepo.save(noti)
         }
         let noti = {
           isForKitchen: true,
@@ -317,6 +351,7 @@ export class OrdersService {
           created_at: new Date()
         }
         await this.notiRepo.save(noti)
+        
         let invoicePath = await this.generatePDFfromHTML(createdItem)
         console.log("invoicePath")
         console.log(invoicePath)
@@ -356,10 +391,29 @@ export class OrdersService {
         longitude: reqBody.longitude,
         deliverySlot: reqBody.deliverySlot,
         deliveryParterId: deliveryBoy.id ? deliveryBoy.id : 0,
-        deliveryParterName: deliveryBoy.id ? deliveryBoy.name : ''
+        deliveryParterName: deliveryBoy.id ? deliveryBoy.name : '',
+        isPickFromKitchen: reqBody.isPickFromKitchen ? reqBody.isPickFromKitchen : false
       }
       console.log(order)
       createdItem = await this.orderModel.save(order);
+      let ordLocObj = {
+        orderId: createdItem.id,
+        latitude: reqBody.latitude,
+        longitude: reqBody.longitude,
+        location: `POINT(${reqBody.longitude} ${reqBody.latitude})`
+      }
+      await this.ordLocRepo.save(ordLocObj)
+      let payData = {
+        userId: reqBody.userId,
+        customerName: customerDetails.fName + " " + customerDetails.lName,
+        customerMobile: customerDetails.mobile,
+        customerEmail: customerDetails.email,
+        orderId: createdItem.id,
+        amount: reqBody.totalAmount,
+        isSubscribe: false,
+        paymentDate: moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      await this.paymentRepo.save(payData)
       if(zoneMapping && zoneMapping.length) {
         let noti = {
           userId: zoneMapping[0].userId,
@@ -412,17 +466,34 @@ export class OrdersService {
     if(reqBody.mySubLastDate) {
       let mySubOrder = await this.orderModel.findOneBy({mySubId: reqBody.subId})
       console.log(mySubOrder)
+      let customerDetails = await this.userService.findOneById(parseInt(mySubOrder.userId))
       let currentDate = new Date(reqBody.mySubLastDate)
       let startDate = currentDate.setDate(currentDate.getDate() + 1);
       let orderDates = await this.getOrderDates(startDate, reqBody.dates.length, JSON.parse(mySub.selectedPlan));
       console.log(orderDates)
       let oldOrderDates = JSON.parse(mySub.orderDates)
+      let orderIds = ''
+      let refundAmount = 0
       for(let d of reqBody.dates) {
         let index = oldOrderDates.indexOf(d)
-        if(index !== 1) {
+        if(index > -1) {
           oldOrderDates.splice(index, 1);
+          let order = await this.orderModel.findOne({where:{userId: mySubOrder.userId, orderDate: d}})
+          orderIds = orderIds + order.id + ","
+          refundAmount = refundAmount + order.price
+          await this.orderModel.delete({id: order.id})
         }
       }
+      let refundObj = {
+        amount: refundAmount,
+        userId: mySubOrder.userId,
+        customerName: customerDetails.fName + " " + customerDetails.lName,
+        customerMobile: customerDetails.mobile,
+        customerEmail: customerDetails.email,
+        orderIds: orderIds,
+        refundRaisedDate: moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      await this.refundRepo.save(refundObj)
       let deliveryBoy: any = {}
       let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
       if(zoneMapping && zoneMapping.length) {
@@ -494,11 +565,34 @@ export class OrdersService {
   }
   
   async deleteMySubscription(reqBody: any): Promise<any> {
-    let mySubOrder = await this.orderModel.delete({mySubId: reqBody.subId, status: 'new'})
-    let dd = await this.mySubModel.update({id: reqBody.subId}, {isActive: false})
-    console.log(dd)
+    let amount = 0;
+    let orderIds = ''
+    let mySubOrders = await this.orderModel.find({where: {mySubId: reqBody.subId, status: 'new'}})
+    if(mySubOrders.length) {
+      let userId = mySubOrders.length ? mySubOrders[0].userId : null
+      let customerDetails = await this.userService.findOneById(parseInt(userId))
+      for(let order of mySubOrders) {
+        amount = amount + order.price
+        orderIds = orderIds + order.id + ",";
+      }
+      let mySubOrder = await this.orderModel.delete({mySubId: reqBody.subId, status: 'new'})
+      let dd = await this.mySubModel.update({id: reqBody.subId}, {isActive: false})
+      let reqObj = {
+        amount: amount,
+        userId: mySubOrders[0].userId,
+        customerName: customerDetails.fName + " " + customerDetails.lName,
+        customerMobile: customerDetails.mobile,
+        customerEmail: customerDetails.email,
+        orderIds: orderIds,
+        refundRaisedDate: moment().format('YYYY-MM-DD HH:mm:ss')
+      }
+      await this.refundRepo.save(reqObj)
+      console.log(dd)
+      return dd
+    } else {
+      return false
+    }
     
-    return dd
   }
   
   async getTodayOrdersReport(reqBody: any): Promise<any> {
@@ -566,5 +660,107 @@ export class OrdersService {
     }
     return ordersDetails
   }
+  async uploadDeliveryImage(file, reqBody: any): Promise<any> {
+    let imagePath = "";
+    if(file) {
+      console.log("uploading file")
+      const { originalname } = file;
+      const bucketS3 = 'kitchen-order-delivery-images';
+      const uploadedData: any = await this.uploadFileS3(file.buffer, bucketS3, originalname);
+      imagePath = uploadedData.Location
+    }
+    
+    
+    // return uploadedData.Location
+    const createdItem = await this.orderModel.update({id: reqBody.orderId}, {deliveryImage: imagePath});
+    return createdItem;
+  }
+
+  async uploadFileS3(file, bucket, name) {
+    const s3 = this.getS3();
+    const params = {
+        Bucket: bucket,
+        Key: String(name),
+        Body: file,
+    };
+    return new Promise((resolve, reject) => {
+        s3.upload(params, (err, data) => {
+        if (err) {
+            reject(err.message);
+        }
+        resolve(data);
+        });
+    });
+  }
+
   
+  async deliveryOrders(reqBody: any): Promise<any> {
+    let kitchenLat=33.141116; 
+    let kitchenLong=-96.797702
+    let ccStatus = ['cancelled', 'completed'];
+    let whereCon: any = {}
+    let response = {}
+    let orders = []
+    if(reqBody.mobile) {
+        whereCon['customerMobile'] = reqBody.mobile
+    }
+    if(reqBody.name) {
+        whereCon['customerName'] = Like(`%${reqBody.name}%`)
+    }
+    if(reqBody.orderType) {
+        whereCon['orderType'] = reqBody.orderType
+    }
+    if(reqBody.status) {
+        whereCon['status'] = reqBody.status
+    } else {
+      whereCon['status'] = Not(In(ccStatus))
+    }
+    if(reqBody.city) {
+        whereCon['city'] = reqBody.city
+    }
+    if(reqBody.zipcode) {
+        whereCon['zipcode'] = reqBody.zipcode
+    }
+    if(reqBody.orderDate) {
+      whereCon['orderDate'] = reqBody.orderDate
+    }
+    if(reqBody.userId) {
+      whereCon['userId'] = reqBody.userId
+    }
+    if(reqBody.id) {
+      whereCon['id'] = reqBody.id
+    }
+    if(reqBody.deliveryParterId) {
+      whereCon['deliveryParterId'] = reqBody.deliveryParterId
+    }
+    let orderIds = []
+    const [items, count] = await this.orderModel.findAndCount({where: whereCon, take: 300, order:{created_at: 'DESC'} });
+    
+    for(let order of items) {
+      orderIds.push(order.id)
+    }
+    console.log(orderIds)
+    if(orderIds.length) {
+      let dOrders = await this.ordLocRepo.query(
+        `SELECT id, orderId, ST_AsText(location) AS location, ST_Distance_Sphere(location, ST_SRID(POINT(${kitchenLong}, ${kitchenLat}), 4326)) AS distance
+        FROM order_locations where orderId in (${orderIds}) 
+         ORDER BY distance ASC;`
+      );
+      if(dOrders.length) {
+        for(let order of dOrders) {
+          let od = items.filter((ord) => {
+            return ord.id == order.orderId
+          })
+          orders.push(od[0])
+        }
+      }
+      return {items: orders, count: orders.length}
+
+    } else {
+      return null
+    }
+    console.log(orderIds)
+    return {items, count};
+  }
+
 }

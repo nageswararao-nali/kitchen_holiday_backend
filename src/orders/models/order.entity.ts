@@ -75,6 +75,12 @@ export class OrdersEntity {
   @Column({nullable: true})
   invoice: string;
 
+  @Column({default: false})
+  isPickFromKitchen: boolean
+
+  @Column({nullable: true})
+  deliveryImage: string;
+
   @CreateDateColumn()
   created_at: Date;
 }

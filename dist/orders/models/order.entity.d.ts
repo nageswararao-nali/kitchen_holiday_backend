@@ -23,5 +23,7 @@ export declare class OrdersEntity {
     deliverySlot: string;
     mySubId: number;
     invoice: string;
+    isPickFromKitchen: boolean;
+    deliveryImage: string;
     created_at: Date;
 }

@@ -9,44 +9,56 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ZonesEntity = void 0;
+exports.PaymentsEntity = void 0;
 const typeorm_1 = require("typeorm");
-let ZonesEntity = class ZonesEntity {
+let PaymentsEntity = class PaymentsEntity {
 };
-exports.ZonesEntity = ZonesEntity;
+exports.PaymentsEntity = PaymentsEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ZonesEntity.prototype, "id", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "zipcode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "isActive", void 0);
+], PaymentsEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "latitude", void 0);
+], PaymentsEntity.prototype, "userId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "longitude", void 0);
+], PaymentsEntity.prototype, "customerName", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ type: 'point', spatialFeatureType: 'Point', srid: 4326, nullable: true }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "location", void 0);
+], PaymentsEntity.prototype, "customerMobile", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], PaymentsEntity.prototype, "customerEmail", void 0);
+__decorate([
+    (0, typeorm_1.Column)(),
+    __metadata("design:type", Number)
+], PaymentsEntity.prototype, "amount", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", Number)
+], PaymentsEntity.prototype, "orderId", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: false }),
+    __metadata("design:type", Boolean)
+], PaymentsEntity.prototype, "isSubscribe", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
+], PaymentsEntity.prototype, "paymentDate", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], ZonesEntity.prototype, "created_at", void 0);
-exports.ZonesEntity = ZonesEntity = __decorate([
-    (0, typeorm_1.Entity)('zones')
-], ZonesEntity);
-//# sourceMappingURL=zone.entity.js.map
+], PaymentsEntity.prototype, "created_at", void 0);
+__decorate([
+    (0, typeorm_1.CreateDateColumn)(),
+    __metadata("design:type", Date)
+], PaymentsEntity.prototype, "updated_at", void 0);
+exports.PaymentsEntity = PaymentsEntity = __decorate([
+    (0, typeorm_1.Entity)('payments')
+], PaymentsEntity);
+//# sourceMappingURL=payments.entity.js.map

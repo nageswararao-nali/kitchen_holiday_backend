@@ -1,8 +1,6 @@
-export declare class ZonesEntity {
+export declare class OrderLocationsEntity {
     id: number;
-    name: string;
-    zipcode: string;
-    isActive: string;
+    orderId: number;
     latitude: string;
     longitude: string;
     location: string;

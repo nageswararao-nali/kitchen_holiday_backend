@@ -9,44 +9,36 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ZonesEntity = void 0;
+exports.OrderLocationsEntity = void 0;
 const typeorm_1 = require("typeorm");
-let ZonesEntity = class ZonesEntity {
+let OrderLocationsEntity = class OrderLocationsEntity {
 };
-exports.ZonesEntity = ZonesEntity;
+exports.OrderLocationsEntity = OrderLocationsEntity;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], ZonesEntity.prototype, "id", void 0);
+], OrderLocationsEntity.prototype, "id", void 0);
 __decorate([
     (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "name", void 0);
-__decorate([
-    (0, typeorm_1.Column)(),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "zipcode", void 0);
-__decorate([
-    (0, typeorm_1.Column)({ default: true }),
-    __metadata("design:type", String)
-], ZonesEntity.prototype, "isActive", void 0);
+    __metadata("design:type", Number)
+], OrderLocationsEntity.prototype, "orderId", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "latitude", void 0);
+], OrderLocationsEntity.prototype, "latitude", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "longitude", void 0);
+], OrderLocationsEntity.prototype, "longitude", void 0);
 __decorate([
     (0, typeorm_1.Column)({ type: 'point', spatialFeatureType: 'Point', srid: 4326, nullable: true }),
     __metadata("design:type", String)
-], ZonesEntity.prototype, "location", void 0);
+], OrderLocationsEntity.prototype, "location", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)
-], ZonesEntity.prototype, "created_at", void 0);
-exports.ZonesEntity = ZonesEntity = __decorate([
-    (0, typeorm_1.Entity)('zones')
-], ZonesEntity);
-//# sourceMappingURL=zone.entity.js.map
+], OrderLocationsEntity.prototype, "created_at", void 0);
+exports.OrderLocationsEntity = OrderLocationsEntity = __decorate([
+    (0, typeorm_1.Entity)('order_locations')
+], OrderLocationsEntity);
+//# sourceMappingURL=orderLocations.entity.js.map

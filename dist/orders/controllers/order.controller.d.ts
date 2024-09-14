@@ -7,6 +7,11 @@ export declare class OrdersController {
         success: boolean;
         message: string;
     }>;
+    deliveryOrders(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
     getOrder(reqBody: any): Promise<{
         data: {};
         success: boolean;
@@ -50,6 +55,11 @@ export declare class OrdersController {
     getTodayOrdersReport(reqBody: any): Promise<{
         data: {};
         success: boolean;
+        message: string;
+    }>;
+    uploadDeliveryImage(reqBody: any, itemImage: any): Promise<{
+        success: boolean;
+        data: {};
         message: string;
     }>;
 }

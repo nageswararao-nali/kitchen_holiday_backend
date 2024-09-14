@@ -22,7 +22,8 @@ import { ConfigModule } from '@nestjs/config';
       database: 'kitchen_holiday',
       // entities: [],
       autoLoadEntities: true,
-      synchronize: true
+      synchronize: true,
+      legacySpatialSupport: false
     }), // Change the connection string as per your MongoDB setup
     AuthModule,
     UsersModule,

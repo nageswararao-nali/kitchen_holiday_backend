@@ -30,7 +30,8 @@ exports.AppModule = AppModule = __decorate([
                 password: 'KitchenHoliday2024',
                 database: 'kitchen_holiday',
                 autoLoadEntities: true,
-                synchronize: true
+                synchronize: true,
+                legacySpatialSupport: false
             }),
             auth_module_1.AuthModule,
             users_module_1.UsersModule,
