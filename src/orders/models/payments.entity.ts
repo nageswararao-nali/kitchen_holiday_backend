@@ -24,6 +24,9 @@ export class PaymentsEntity {
   @Column({nullable: true})
   orderId: number;
 
+  @Column({nullable: true})
+  itemName: string;
+
   @Column({default: false})
   isSubscribe: boolean;
 

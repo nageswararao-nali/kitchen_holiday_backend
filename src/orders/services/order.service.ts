@@ -332,7 +332,8 @@ export class OrdersService {
           orderId: muSub.id,
           amount: reqBody.totalAmount,
           isSubscribe: true,
-          paymentDate: moment().format('YYYY-MM-DD HH:mm:ss')
+          paymentDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+          itemName: reqBody.itemName
         }
         await this.paymentRepo.save(payData)
         if(reqBody.isPickFromKitchen != true)  {
@@ -411,7 +412,8 @@ export class OrdersService {
         orderId: createdItem.id,
         amount: reqBody.totalAmount,
         isSubscribe: false,
-        paymentDate: moment().format('YYYY-MM-DD HH:mm:ss')
+        paymentDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        itemName: reqBody.itemName
       }
       await this.paymentRepo.save(payData)
       if(zoneMapping && zoneMapping.length) {
@@ -450,6 +452,23 @@ export class OrdersService {
 
   async updateOrderStatus(reqBody: any): Promise<any> {
     let order = await this.orderModel.update({id: reqBody.orderId}, {status: reqBody.status})
+    if(reqBody.status == 'cancelled') {
+      let orderDetails = await this.orderModel.findOneBy({id: reqBody.orderId})
+      if(orderDetails) {
+        let customerDetails = await this.userService.findOneById(parseInt(orderDetails.userId))
+        let refundObj = {
+          amount: orderDetails.price,
+          userId: orderDetails.userId,
+          customerName: orderDetails.customerName,
+          customerMobile: orderDetails.customerMobile,
+          customerEmail: customerDetails.email,
+          orderIds: orderDetails.id + ",",
+          refundRaisedDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+          itemName: orderDetails.itemName
+        }
+        await this.refundRepo.save(refundObj)
+      }
+    }
     return order
   }
 
@@ -484,16 +503,17 @@ export class OrdersService {
           await this.orderModel.delete({id: order.id})
         }
       }
-      let refundObj = {
+      /*let refundObj = {
         amount: refundAmount,
         userId: mySubOrder.userId,
         customerName: customerDetails.fName + " " + customerDetails.lName,
         customerMobile: customerDetails.mobile,
         customerEmail: customerDetails.email,
         orderIds: orderIds,
-        refundRaisedDate: moment().format('YYYY-MM-DD HH:mm:ss')
+        refundRaisedDate: moment().format('YYYY-MM-DD HH:mm:ss'),
+        itemName: mySubOrder.itemName
       }
-      await this.refundRepo.save(refundObj)
+      await this.refundRepo.save(refundObj)*/
       let deliveryBoy: any = {}
       let zoneMapping = await this.zoneMapRepo.find({where:{zipcodes: Like(`%${reqBody.zipcode}%`)}})
       if(zoneMapping && zoneMapping.length) {
@@ -580,6 +600,7 @@ export class OrdersService {
       let reqObj = {
         amount: amount,
         userId: mySubOrders[0].userId,
+        itemName: mySubOrders[0].itemName,
         customerName: customerDetails.fName + " " + customerDetails.lName,
         customerMobile: customerDetails.mobile,
         customerEmail: customerDetails.email,

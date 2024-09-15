@@ -25,6 +25,9 @@ export class RefundsEntity {
   orderIds: string;
 
   @Column({nullable: true})
+  itemName: string;
+
+  @Column({nullable: true})
   refundRaisedDate: string;
 
   @Column({nullable: true})
@@ -33,8 +36,11 @@ export class RefundsEntity {
   @Column({default: false})
   approved: boolean;
 
-  @Column({nullable: false})
+  @Column({nullable: true})
   approved_by: string;
+
+  @Column({default: 'processing'})
+  status: string;
 
   @CreateDateColumn()
   created_at: Date;

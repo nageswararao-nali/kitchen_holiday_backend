@@ -45,6 +45,10 @@ __decorate([
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
+], RefundsEntity.prototype, "itemName", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ nullable: true }),
+    __metadata("design:type", String)
 ], RefundsEntity.prototype, "refundRaisedDate", void 0);
 __decorate([
     (0, typeorm_1.Column)({ nullable: true }),
@@ -55,9 +59,13 @@ __decorate([
     __metadata("design:type", Boolean)
 ], RefundsEntity.prototype, "approved", void 0);
 __decorate([
-    (0, typeorm_1.Column)({ nullable: false }),
+    (0, typeorm_1.Column)({ nullable: true }),
     __metadata("design:type", String)
 ], RefundsEntity.prototype, "approved_by", void 0);
+__decorate([
+    (0, typeorm_1.Column)({ default: 'processing' }),
+    __metadata("design:type", String)
+], RefundsEntity.prototype, "status", void 0);
 __decorate([
     (0, typeorm_1.CreateDateColumn)(),
     __metadata("design:type", Date)

@@ -6,6 +6,7 @@ export declare class PaymentsEntity {
     customerEmail: string;
     amount: number;
     orderId: number;
+    itemName: string;
     isSubscribe: boolean;
     paymentDate: string;
     created_at: Date;
