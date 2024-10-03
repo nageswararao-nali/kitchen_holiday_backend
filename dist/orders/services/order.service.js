@@ -83,6 +83,15 @@ let OrdersService = class OrdersService {
         if (reqBody.deliveryParterId) {
             whereCon['deliveryParterId'] = reqBody.deliveryParterId;
         }
+        if (reqBody.searchValue) {
+            let { items } = await this.userService.getUsersSearch({ search: reqBody.searchValue, user_type: 'customer' });
+            console.log(items);
+            let userIds = [];
+            for (let item of items) {
+                userIds.push(item.id);
+            }
+            whereCon['userId'] = (0, typeorm_2.In)(userIds);
+        }
         const [items, count] = await this.orderModel.findAndCount({ where: whereCon, take: 300, order: { created_at: 'DESC' } });
         return { items, count };
     }

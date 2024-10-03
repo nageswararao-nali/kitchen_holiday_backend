@@ -16,12 +16,14 @@ exports.SubscriptionsService = void 0;
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const users_service_1 = require("../../users/users.service");
 const subscription_entity_1 = require("../models/subscription.entity");
 const mysubscriptions_entity_1 = require("../models/mysubscriptions.entity");
 let SubscriptionsService = class SubscriptionsService {
-    constructor(subRepo, mySubRepo) {
+    constructor(subRepo, mySubRepo, userService) {
         this.subRepo = subRepo;
         this.mySubRepo = mySubRepo;
+        this.userService = userService;
     }
     findOne(id) {
         return this.subRepo.findOneBy({ id });
@@ -58,6 +60,15 @@ let SubscriptionsService = class SubscriptionsService {
         if (reqBody.userId) {
             whereCon['userId'] = reqBody.userId;
         }
+        if (reqBody.searchValue) {
+            let { items } = await this.userService.getUsersSearch({ search: reqBody.searchValue, user_type: 'customer' });
+            console.log(items);
+            let userIds = [];
+            for (let item of items) {
+                userIds.push(item.id);
+            }
+            whereCon['userId'] = (0, typeorm_2.In)(userIds);
+        }
         whereCon['isActive'] = true;
         const [items, count] = await this.mySubRepo.findAndCount({ where: whereCon, order: { created_at: 'DESC' } });
         return { items, count };
@@ -92,6 +103,7 @@ exports.SubscriptionsService = SubscriptionsService = __decorate([
     __param(0, (0, typeorm_1.InjectRepository)(subscription_entity_1.SubscriptionsEntity)),
     __param(1, (0, typeorm_1.InjectRepository)(mysubscriptions_entity_1.MySubscriptionsEntity)),
     __metadata("design:paramtypes", [typeorm_2.Repository,
-        typeorm_2.Repository])
+        typeorm_2.Repository,
+        users_service_1.UsersService])
 ], SubscriptionsService);
 //# sourceMappingURL=subscription.service.js.map

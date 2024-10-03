@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { OrdersEntity } from '../models/order.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { In, Like, Repository } from 'typeorm';
 import * as moment from 'moment';
 import { UsersService } from 'src/users/users.service';
 import { ItemsService } from 'src/items/services/items.service';
@@ -16,7 +16,8 @@ export class SubscriptionsService {
     @InjectRepository(SubscriptionsEntity)
     private subRepo: Repository<SubscriptionsEntity>,
     @InjectRepository(MySubscriptionsEntity)
-    private mySubRepo: Repository<MySubscriptionsEntity>
+    private mySubRepo: Repository<MySubscriptionsEntity>,
+    private userService: UsersService
   ) {}
 
   findOne(id: number): Promise<SubscriptionsEntity> {
@@ -56,6 +57,15 @@ export class SubscriptionsService {
     let whereCon: any = {}
     if(reqBody.userId) {
         whereCon['userId'] = reqBody.userId
+    }
+    if(reqBody.searchValue) {
+      let {items} = await this.userService.getUsersSearch({search: reqBody.searchValue, user_type: 'customer'})
+      console.log(items)
+      let userIds = [];
+      for(let item of items) {
+        userIds.push(item.id)
+      }
+      whereCon['userId'] = In(userIds)
     }
     whereCon['isActive'] = true
     const [items, count] = await this.mySubRepo.findAndCount({where: whereCon, order:{created_at: 'DESC'} });

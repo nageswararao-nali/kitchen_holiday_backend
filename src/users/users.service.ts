@@ -124,7 +124,6 @@ export class UsersService {
         }
       ]
     }
-    
     const [items, count] = await this.usersRepo.findAndCount({where:whereCond});
     return {items, count}
   }
