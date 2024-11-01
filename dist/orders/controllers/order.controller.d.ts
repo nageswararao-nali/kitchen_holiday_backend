@@ -62,4 +62,9 @@ export declare class OrdersController {
         data: {};
         message: string;
     }>;
+    dashboardDetails(reqBody: any): Promise<{
+        data: {};
+        success: boolean;
+        message: string;
+    }>;
 }

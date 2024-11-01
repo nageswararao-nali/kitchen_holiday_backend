@@ -212,6 +212,22 @@ let OrdersController = class OrdersController {
         }
         return response;
     }
+    async dashboardDetails(reqBody) {
+        let response = {
+            data: {},
+            success: true,
+            message: 'Dashboard details'
+        };
+        const sub = await this.orderService.dashboardDetails(reqBody);
+        if (!sub) {
+            response.success = false;
+            response.message = "Problem in getting today order details";
+        }
+        else {
+            response.data = sub;
+        }
+        return response;
+    }
 };
 exports.OrdersController = OrdersController;
 __decorate([
@@ -300,6 +316,13 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], OrdersController.prototype, "uploadDeliveryImage", null);
+__decorate([
+    (0, common_1.Post)('dashboardDetails'),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], OrdersController.prototype, "dashboardDetails", null);
 exports.OrdersController = OrdersController = __decorate([
     (0, common_1.Controller)('orders'),
     __metadata("design:paramtypes", [order_service_1.OrdersService])

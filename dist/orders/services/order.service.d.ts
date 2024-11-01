@@ -41,4 +41,5 @@ export declare class OrdersService {
     uploadDeliveryImage(file: any, reqBody: any): Promise<any>;
     uploadFileS3(file: any, bucket: any, name: any): Promise<unknown>;
     deliveryOrders(reqBody: any): Promise<any>;
+    dashboardDetails(reqBody: any): Promise<any>;
 }

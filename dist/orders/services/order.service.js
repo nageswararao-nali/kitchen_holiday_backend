@@ -703,6 +703,33 @@ let OrdersService = class OrdersService {
         console.log(orderIds);
         return { items, count };
     }
+    async dashboardDetails(reqBody) {
+        let whereCon = {};
+        let ordersDetails = {
+            allUsers: 0,
+            allCustomers: 0,
+            allDeliveryBoys: 0,
+            allOrders: 0,
+            allCancelled: 0,
+            allDelivered: 0
+        };
+        let [items, count] = await this.orderModel.findAndCount({});
+        ordersDetails.allOrders = count;
+        for (let order of items) {
+            if (order.status == 'cancelled') {
+                ordersDetails.allCancelled = ordersDetails.allCancelled + 1;
+            }
+            if (order.status == 'delivered') {
+                ordersDetails.allDelivered = ordersDetails.allDelivered + 1;
+            }
+        }
+        let driverData = await this.userService.totalUsers({ where: { user_type: 'driver' } });
+        let customerData = await this.userService.totalUsers({ where: { user_type: 'customer' } });
+        ordersDetails.allDeliveryBoys = driverData.count;
+        ordersDetails.allCustomers = customerData.count;
+        ordersDetails.allUsers = customerData.count + driverData.count;
+        return ordersDetails;
+    }
 };
 exports.OrdersService = OrdersService;
 exports.OrdersService = OrdersService = __decorate([

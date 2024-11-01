@@ -224,4 +224,23 @@ export class OrdersController {
       }
       return response
   }
+
+  @Post('dashboardDetails')
+  async dashboardDetails(@Body() reqBody: any) {
+    let response = {
+      data: {},
+      success: true,
+      message: 'Dashboard details'
+    }
+    const sub = await this.orderService.dashboardDetails(reqBody)
+    if(!sub) {
+        response.success = false;
+        response.message = "Problem in getting today order details";
+    } else {
+      response.data = sub
+    }
+    
+    return response
+  }
+  
 }
